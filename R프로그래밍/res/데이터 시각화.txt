@@ -1,0 +1,57 @@
+#데이터 시각화
+#이산변수 시각화
+#이산변수: 정수 단위로 나누어 측정할 수 있는 변수
+#막대차트, 점 차트, 원 차트 등을 이용하여 데이터를 시각화
+
+#세로 막대 차트
+#barplot(): 기본적으로 세로 막대 차트 제공
+#ylim(y축 범위), col(막대 색상), main(제목)속성 등 작용하여 작성
+cart_data <- c(305,450,320,460,330,480,380,520)
+#8개의 벡터에 칼럼명 지정
+names(cart_data)<- c("2018-1","2019-1","2018-2","2019-2","2018-3","2019-3","2018-4","2019-4")
+> cart_data
+2018-1 2019-1 2018-2 2019-2 2018-3 2019-3 2018-4 2019-4 
+   305    450    320    460    330    480    380    520 
+
+barplot(cart_data,ylim=c(0,600),col=rainbow(8),main="2018 VS 2019 매출현황 비교")
+
+#연습문제
+#1. 동전 앞면과 뒷면에 대한 확률 함수 구현
+#랜덤 생성 함수: runif()
+#ex) runif(5, min,max)
+
+#랜덤 생성 함수
+rand_coin <- function(num){
+  
+    rand<-as.integer(runif(num,min=0,max=2))
+    return(rand)
+}
+
+c<-rand_coin(20)
+c
+> c<-rand_coin(20)
+> c
+ [1] 1 1 1 0 0 0 1 1 1 0 1 0 0 0 0 1 1 1 1 1
+
+#랜덤 확률 분포 함수 
+#몬테카를로 시뮬레이션
+monteTest <- function(num){
+  cnt<-0
+  for(i in 1:num){
+    cnt <-cnt+rand_coin(1)
+  }
+  result<-cnt/num
+  return(result)
+}
+
+print(monteTest(20))
+print(monteTest(1000000))
+
+> print(monteTest(20))
+[1] 0.65
+> print(monteTest(1000000))
+[1] 0.499823
+# 동전 20회 던졌을 때 앞뒤를 출력 
+coin<-as.integer(runif(20,0,2))
+
+coin
