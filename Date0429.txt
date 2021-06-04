@@ -1,0 +1,167 @@
+# 라이브러리 설치
+#엑셀 데이터 불러오기 함수 라이브러리
+library(readxl)
+library(xlsx)
+
+#엑셀 데이터 가져오기
+excelData <- read_excel('res/data_ex.xlsx')
+View(excelData)
+
+#파일 경로로 가져오기
+studentx <- read.xlsx(file.choose(),sheetIndex = 1,encoding = 'UTF-8')
+studentx
+View(studentx)
+
+> studentx
+   ID GENDER AGE AREA
+1   1      F  50 서울
+2   2      M  40 경기
+3   3      F  28 제주
+4   4      F  50 서울
+5   5      F  27 서울
+6   6      M  23 서울
+7   7     MF  56 경기
+8   8      M  47 서울
+9   9      F  20 인천
+10 10      M  55 대구
+
+#1. 텍스트 파일 생성 
+#2. 데이터 불러오기
+txtData <- read.table('res/data_ex.txt')
+View(txtData)
+
+#현재 작업 디렉터리의 경로 확인
+getwd()
+#작업 디렉터리 설정
+setwd("D:/MysecondRepository_20210402/R프로그래밍")
+
+person <- read.table(file.choose())
+names(person)<-c('번호','성별','나이','주소')
+person
+
+#header: 데이터에서 1행이 변수명인지 판별
+# -->1행이 변수명이면 header=TRUE
+
+# skip : 특정 행까지 제외하고 데이터 가져오기
+#ex) 3행부터 가져오기 -> skip =2
+
+#nrows: 특정 행까지 데이터 가져오기
+# ex) 7행까지 데이터 가져오기 -> nrows=7
+
+# sep : 데이터 구분자 지정
+# ex) 쉼표로 구분된 데이터 집합 -> ','
+
+txtData1 <-read.table('res/data_ex1.txt', header = T,sep=',')
+View(txtData1)
+> txtData1
+  ID GENDER AGE AREA
+1  1      F  50 서울
+2  2      M  40 경기
+3  3      F  28 제주
+4  4      F  50 서울
+5  5      F  27 서울
+6  6      M  23 서울
+7  7      M  56 경기
+
+#칼럼명 지정하여 데이터 불러오기
+#col.names=
+varName <- c('ID','성별','나이','지역')
+txtVar <- read.table('res/data_ex2.txt',sep = ',',col.names = varName)
+View(txtVar)
+> txtVar
+  ID 성별 나이 지역
+1  1    F   50 서울
+2  2    M   40 경기
+3  3    F   28 제주
+4  4    F   50 서울
+5  5    F   27 서울
+6  6    M   23 서울
+7  7    M   56 경기
+
+txttxt <- read.table('res/data_ex2.txt',sep=',')
+colnames(txttxt) <-varName
+txttxt
+
+#.rda(통계용 파일)
+id <- c(1, 2, 3, 4, 5)
+name <- c('제니','리사','로제','지수','블링크')
+rdaData <-data.frame(ID=id, NAME=name)
+# rda file 저장 save()
+save(rdaData, file='res/data_ex.rda')
+load('res/data_ex.rda')
+View(rdaData)
+
+#csv 파일 데이터 저장 write.csv()
+id <- c(1, 2, 3, 4, 5)
+name <- c('제니','리사','로제','지수','블링크')
+dataCsv <- data.frame(ID=id, NAME=name)
+write.csv(dataCsv, file = 'res/data_ex.csv')
+
+#txt 파일로 데이터 저장 write.table()
+dataTxt <- data.frame(ID=id, NAME=name)
+write.table(dataTxt,file = 'res/data_ex_sav.txt')
+
+titanic <- read.csv('https://vincentarelbundock.github.io/Rdatasets/csv/COUNT/titanic.csv')
+titanic
+#7행 까지 불러오기
+tt <-read.csv('https://vincentarelbundock.github.io/Rdatasets/csv/COUNT/titanic.csv',nrows = 7)
+tt
+#sikp
+t2 <- read.csv('https://vincentarelbundock.github.io/Rdatasets/csv/COUNT/titanic.csv', skip = 1000)
+t2
+
+#차수 확인 함수
+> dim(titanic)
+[1] 1316    5
+> str(titanic)
+'data.frame':	1316 obs. of  5 variables:
+ $ X       : int  1 2 3 4 5 6 7 8 9 10 ...
+ $ class   : chr  "1st class" "1st class" "1st class" "1st class" ...
+ $ age     : chr  "adults" "adults" "adults" "adults" ...
+ $ sex     : chr  "man" "man" "man" "man" ...
+ $ survived: chr  "yes" "yes" "yes" "yes" ...
+
+#각각의 정보 차수 확인
+table(titanic$age) #연령별 차수
+table(titanic$sex) #성별 차수
+table(titanic$survived) #생존여부 차수
+
+> table(titanic$age)
+
+adults  child 
+  1207    109 
+> table(titanic$sex)
+
+  man women 
+  869   447 
+> table(titanic$survived)
+
+ no yes 
+817 499 
+
+#교차 분할표
+tab <- table(titanic$survived,titanic$sex)
+tab
+# 생존율 기준으로 성(m/w)별로 통합결과
+> tab
+     
+      man women
+  no  694   123
+  yes 175   324
+
+plot(tab,col=c('green','blue'),main='성별에 따른 생존 여부')
+# 사망 그린색 , 생존 블루
+#성별에 따른 생존 여부 막대그래프 표현
+barplot(tab,col=c('green','blue'),main='성별에 따른 생존 여부')
+
+write.table(titanic,'res/titanic.txt',row.names = F)
+titanicDf <- read.table(file='res/titanic.txt', sep='',header = T)
+View(titanicDf)
+
+write.csv(titanicDf,'res/titanic.csv',row.names = F,quote = F)
+
+#라이브러리 writexl 패키지 사용
+#엑셀 쓰기 라이브러리 (데이터 저장)
+library(writexl)
+#엑셀 파일로 데이터 저장 write_xlsx
+write_xlsx(x=titanicDf, path = 'res/titanic.xlsx', col_names = T)

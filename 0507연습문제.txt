@@ -1,0 +1,197 @@
+##################################################################
+library('dplyr')
+# 1. ozone 합, 평균값, 표준편차, 분산 구하기 (NA 값 제거)
+ozone_data <- melt(airquality,id=c('month','day'),na.rm = T)
+head(ozone_data)
+summarise(ozone_data, SUM=sum(value),Mean=mean(value),SD=sd(value),VAR=var(value))
+################################################################################
+# 1) 모든 정보 칼럼명을 소문자로 변경
+names(airquality)<-tolower(names(airquality))
+str(airquality)
+class(airquality)
+# 모든 기본함수에는 매개변수로 NA 제거 옵션 제공
+sum(airquality$ozone,na.rm=T) # 합
+mean(airquality$ozone, na.rm = T) # 평균
+var(airquality$ozone, na.rm=T) # 분산
+sd(airquality$ozone, na.rm = T) # 표준편차
+
+# 2. 모든 NA 제거 후, 각 월별로 측정 값들의 평균
+air_mean <- acast(ozone_data,month~variable, mean)
+air_mean
+class(air_mean)
+
+# 3. 5월 달 평균 온도, 풍속
+temp <- melt(airquality,id='month',measure.vars = 'temp',na.rm=T)
+wind <- melt(airquality, id='month',measure.vars = 'wind', na.rm=T)
+data1 <- filter(temp,month==5)
+data2 <- filter(wind,month==5)
+mean_temp<-summarise(data1,temp_mean=mean(value))
+mean_wind<-summarise(data2,wind_mean=mean(value))
+mean_temp;mean_wind
+mean_temp_wind <- cbind(mean_temp,mean_wind)
+mean_temp_wind
+################################################################################
+# 1) 5월 달 온도, 풍속 
+tw5Data<- subset(airquality,month==5,select = c('wind','temp'))
+tw5Data
+mean(tw5Data$wind,na.rm = T);mean(tw5Data$temp, na.rm = T)
+
+########################################################################
+fil_data <- filter(airquality,month==5) %>% select(wind,temp)
+witeData <- summarise(fil_data,wind_mean=mean(wind,na.rm = T),temp_mean=mean(temp,na.rm = T))
+witeData
+
+# 4. ozoen 5월달 합, 평균, 분산, 표준편차 (NA 제거)
+# --> R기본 함수와 사용자 정의 함수 각각 사용
+oz_data<-filter(ozone_data,month==5 & variable=='ozone')
+oz_data
+summarise(oz_data,sum=sum(value),mean=mean(value),var=var(value),sd=sd(value))
+#사용자 정의 함수
+as.list(oz_data)
+oz_val <- oz_data$value
+oz_val
+f <- function(x){
+  sum <- 0
+  for(i in x){
+    sum <- sum+i
+  }
+  cat("합계: ",sum,'\n')
+  
+  mean <- sum/length(x)
+  cat("평균: ",mean,'\n')
+  
+  var<-sum((x-mean(x))^2)/(length(x)-1)
+  cat("분산: ", var,'\n')
+  
+  sd <- sqrt(var)
+  cat("표준 편차: ",sd)
+}
+f(oz_data$value)
+f(oz_val)
+###########################################################################
+###########################################################################
+ozone5 <- subset(airquality, month==5, select = ozone)
+ozone5$ozone
+mean(ozone5$ozone,na.rm=T)
+sum(ozone5$ozone, na.rm=T);var(ozone5$ozone,na.rm=T);sd(ozone5$ozone, na.rm=T)
+
+delNa= ifelse(!is.na(ozone5$ozone),ozone5$ozone,round(mean(ozone5$ozone,na.rm = T),5))
+delNa
+mean(delNa)
+sum(delNa);var(delNa);sd(delNa)
+
+func <- function(x){
+  sum <- 0
+  for(i in x){
+    sum <- sum + i
+    len<-length(x)
+  }
+  cat("합: ",sum,'\n')
+  
+  mean <- sum / len
+  cat("평균: ",mean,'\n')
+  
+  var <- sum((x-mean)^2) / (len-1)
+  cat("분산: ",var,'\n')
+  
+  sd<- sqrt(var)
+  cat("표준 편차: ",sd,'\n')
+}
+func(delNa)
+
+#############################################################################
+airquality %>% filter(month==5) %>%  select(ozone) %>% summarise(ozone5_sum=sum(ozone,na.rm = T),ozone5_avg=mean(ozone,na.rm = T)
+                                                                 ,ozone5_var=var(ozone,na.rm = T),ozone5_sd=sd(ozone,na.rm = T))
+  ozone5_sum ozone5_avg ozone5_var ozone5_sd
+1        614   23.61538   493.9262  22.22445
+
+# 5. 5월 7일 데이터 출력
+str(airquality)
+airquality[airquality$month==5 & airquality$day==7,]
+
+# 6. 5/1 ~ 5/6까지 오존농도
+#-->기준열(month,day)
+
+# 6. 5/1 ~ 5/6까지 오존농도
+#-->기준열(month,day)
+oz <-melt(airquality, id=c('month','day'),measure.vars = 'ozone',na.rm=T)
+oz
+printInfo <-function(){
+  data<-data.frame()
+  for(i in c(1:6)){
+    print(filter(oz,month==5&day== i))
+  }
+  return(data)
+}
+printInfo()
+
+# 7. 기온이 가장 높은 날짜를 기준으로 출력
+airquality[which.max(airquality$temp), c('month','day')]
+# 8. 기온이 가장 높은 날의 모든 데이터 출력
+airquality[which.max(airquality$temp),c(1:6)]
+# 9. 6월달에 발생한 가장 강한 바람의 세기 출력
+#--> subset() 사용
+wind6 <- subset(airquality,month=6, select = wind)
+
+> #####################################################
+> blackpink <- data.frame(name=c('제니','리사','로제','지수'),age=c(26,25,25,27),from=c('뉴질랜드','태국','호주','한국'))
+> blackpink[blackpink$name=='제니'&blackpink$age==26,]
+  name age     from
+1 제니  26 뉴질랜드
+> jenInfo <- subset(blackpink,name=='제니',select=from)
+> class(jenInfo)
+[1] "data.frame"
+
+> jenInfo
+      from
+1 뉴질랜드
+
+> filter(blackpink,name=='제니') %>%select(from)
+      from
+1 뉴질랜드
+
+jenInfo <- subset(blackpink,name=='제니',)
+
+> jenInfo
+  name age     from
+1 제니  26 뉴질랜드
+
+> filter(blackpink,name=='제니')
+  name age     from
+1 제니  26 뉴질랜드
+> blackpink[which.max(blackpink$age),]
+  name age from
+4 지수  27 한국
+> blackpink[which.max(blackpink$age),c('name','from')]
+  name from
+4 지수 한국
+class(wind6)
+
+# 연습
+# 1. library(dplyr), libray(hflights) 설치
+library(dplyr)
+install.packages("hflights")
+library("hflights")
+head(hflights)
+str(hflights)
+class(hflights)
+View(hflights)
+# 2. 1월 2일 데이터 구하기
+head(filter(hflights,Month==1 & DayofMonth==2))
+# 3. 1월 or 2월 데이터 추출
+month1_2 <- filter(hflights,Month==1 | Month==2)
+View(month1_2)
+# 4. 도착시간을 기준으로 오름차순 정렬
+arrange(hflights,DepTime)
+# 5. Year, Month, DepTime, ArrTime 데이터 검색
+select(hflights,Year,Month,DepTime,ArrTime)
+# 6. 도착지연 시간을 구한 후 새로운 컬럼 추가
+# 도착지연 시간: ArrTime-DepTime  
+View(mutate(hflights,DelayTime= ArrTime - DepTime))
+# 7. 비행시간 평균 (NA 제거)
+mean(hflights$AirTime,na.rm=T)
+# 8. 도착시간(ArrTime)의 표준편차, 분산 구하기
+sd(hflights$ArrTime,na.rm = T)
+var(hflights$ArrTime,na.rm=T)
+class(wind6$wind)
+wind6[which.max(wind6$wind),]

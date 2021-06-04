@@ -1,0 +1,257 @@
+library(readxl)
+exdata1 <- read_excel('res/sample1.xlsx')
+exdata1
+
+# 빈도수 분석 라이브러리
+install.packages('descr')
+library(descr)
+
+#지역별 빈도수
+freq(exdata1$AREA, plot = T)
+exdata1$AREA 
+      Frequency Percent
+경기          2      20
+대구          1      10
+부산          1      10
+서울          4      40
+수원          1      10
+울산          1      10
+Total        10     100
+
+# stem and Leaf plot
+# 통계적 자료를 줄기, 잎, 도수로 표현
+stem(exdata1$AGE)
+# 줄기 | 잎
+exdata1$AGE
+# 1 -> 10대 | 14
+# 2 -> 20 대 | 20 23 23 
+
+> stem(exdata1$AGE)
+
+  The decimal point is 1 digit(s) to the right of the |
+
+  1 | 4
+  2 | 033
+  3 | 224
+  4 | 05
+  5 | 0
+
+> exdata1$AGE
+ [1] 50 20 40 34 45 32 32 23 23 14
+
+#히스토그램 histogram : 구간별 빈도수 
+#측정값의 범위(구간)를 그래프의 x축, 
+#범위에 속하는 측정값의 출현 빈도수를 y축에 나타낸 그래프
+hist(exdata1$AGE)
+
+#x축에 범위 값 지정 xlim= c(최소값, 최대값)
+#y 축에 범위 값 지정 ylim=c(최솟값, 최댓값)
+hist(exdata1$AGE,xlim =c(0,100),ylim = c(0,10), main='나이 분포')
+
+hist(exdata1$AGE,main='계좌이용 나이분포', xlab='나이 구간', ylab='나이 빈도',
+     xlim=c(1,100),col='pink', probability=T)
+#probability는 퍼센트 (소수점)
+#default는 빈도수
+
+#x축 구간을 2개로 나눠서 나타냄
+hist(exdata1$AGE,main='계좌이용 나이분포', xlab='나이 구간', ylab='나이 빈도',
+     col='pink', freq=T, breaks=2)
+
+#plots 영역 1행 2열의 차트 표현
+par(mfrow= c(1,2))
+# 빈도수에 의해서 히스토그램 그리기
+hist(exdata1$AGE, xlab='나이', col='pink', main='계좌이용 나이분포', xlim=c(1,90))
+#확률 밀도에 의해서 히스트그램 그리기 freq=F
+hist(exdata1$AGE, xlab='나이 구간', col='green', freq= F, main="계좌이용 나이분포",xlim=c(1,90))
+#밀도를 기준으로 line 추가하기
+lines(density(exdata1$AGE),col='red')
+
+#------------------------------------------------------------------
+#상자 그래프 시각화: 요약정보를 시각화하는 데 효과적
+#whisiker: 상자의 좌우, 상하로 뻗어나간 선
+#박스내의 가로선: 증앙값
+#lower whisiker: 최소값
+#--> 중앙값 - 1.5 X IQR보다 큰 데이터 중 가장 작은 값
+#upper whisiker: 최대값
+#-> 중앙값: + 1.5 X IQR보다 작은 데이터 중 가장 큰 값
+#IQR(Inter Quartile Range)=> Q3(제3사분위수) - Q1(제1사분위수)
+#점: 이상값(outlier)- 특이점
+#-> lower whisier 보다 작은 데이터 또는 upper whisier보다 큰 데이터
+#------------------------------------------------------------------
+boxplot(exdata1$Y17_CNT,exdata1$Y16_CNT)
+quantile(exdata1$Y17_CNT)
+quantile(exdata1$Y16_CNT)
+
+boxplot(exdata1$Y17_CNT,exdata1$Y16_CNT, ylim=c(0,60),main='BoxPlot', 
+        names=c('17년도 계좌건수','16년도 계좌건수'),col=c('pink','yellow'))
+
+
+chart_data <- c(305, 450, 320, 460, 330, 480, 380, 520)
+names(chart_data) <- c('2018 1분기', '2019 1분기','2018 2분기','2019 2분기', '2018 3분기','2019 3분기'
+                       ,'2018 4분기', '2019 4분기')
+#barplot(): 세로 막대 차트
+# ylim: y축 값의 범위 col: 막대를 나타낼 색상 main: 차트의 제목
+barplot(chart_data, ylim = c(0,600), col = rainbow(4),main='2018년 VS 2019년 매출현황 비교')
+
+barplot(chart_data, ylim = c(0,600),
+        ylab='매출액 (단위: 백만원)', xlab='년도별 분기 현황',
+        col = rainbow(8),main='2018년 VS 2019년 매출현황 비교')
+
+#horiz =T 속성을 지정하면 가로 막대 차트로 변형
+barplot(chart_data, xlim = c(0,600), horiz= T,
+        ylab='매출액 (단위: 백만원)', xlab='년도별 분기 현황',
+        col = rainbow(8),main='2018년 VS 2019년 매출현황 비교')
+
+#space 막대 차트 간격 조정, cex.names 축 이름의 크기 지정
+barplot(chart_data, xlim = c(0,600), horiz= T,
+        ylab='매출액 (단위: 백만원)', xlab='년도별 분기 현황',
+        col = rainbow(8), space=0.2, cex.names=1,
+        main='2018년 VS 2019년 매출현황 비교')
+
+#rep 반복
+barplot(chart_data, xlim = c(0,600), horiz= T,
+        ylab='매출액 (단위: 백만원)', xlab='년도별 분기 현황',
+        col = rep(c('pink',6,'green',8),2), space=0.2, cex.names=1,
+        main='2018년 VS 2019년 매출현황 비교')
+
+#데이터셋
+data()
+data('VADeaths')
+VADeaths
+#plot에 1행 2열 그래프 보기
+par(mfrow=c(1,2))
+#beside=T : 왼쪽 막대 차트
+barplot(VADeaths, beside = T, col=rainbow(5), main = '버지니아주 하위계층 사망비율')
+
+#beside=F: 오른쪽 그래프 연령 누적 막대
+barplot(VADeaths, beside = F, col=rainbow(5))
+#제목 표시
+title(main='버지니아주 하위계층 사망비율', font.main=4)
+#차트의 범례 legend() 함수 이용하여 표시
+legend(3.5,200, c('50-54','55-59','60-64','65-69','70-74'),
+       cex=0.8, fill=rainbow(5))
+
+par(mfrow=c(1,1))
+#점차트
+#color: 레이블과 점 색상 지정
+#lcolor: 구분선 색상지어
+#pch: 점 모양
+#cex: 확대
+dotchart(chart_data, color = c('blue','pink'),
+         lcolor = 'black', pch=1:2,
+         lables= names(chart_data),xlab = '매출액', 
+         main='분기별 판매 현황: Dot cahrt',cex=1.2)
+
+#원형 차트
+#clockwise = T 속성 지정하면 시계방향으로 데이터 표시
+#기본값은 clockwise = F
+pie(chart_data, labels=names(chart_data),col=rainbow(8),cex=1.2,clockwise = T)
+title('2018~2019년도 분기별 매출현황', font.main= 4)
+
+boxplot(VADeaths, range=0)
+#notch= T 속성은 중위수 비교시 사용 (허리선)
+boxplot(VADeaths,range=0,notch=T)
+
+#기준선 추가
+abline(h=37,lty=3,col='red')
+
+ #R 기본 데이터셋
+> data("iris")
+> str(iris)
+'data.frame':	150 obs. of  5 variables:
+ $ Sepal.Length: num  5.1 4.9 4.7 4.6 5 5.4 4.6 5 4.4 4.9 ...
+ $ Sepal.Width : num  3.5 3 3.2 3.1 3.6 3.9 3.4 3.4 2.9 3.1 ...
+ $ Petal.Length: num  1.4 1.4 1.3 1.5 1.4 1.7 1.4 1.5 1.4 1.5 ...
+ $ Petal.Width : num  0.2 0.2 0.2 0.2 0.2 0.4 0.3 0.2 0.2 0.1 ...
+ $ Species     : Factor w/ 3 levels "setosa","versicolor",..: 1 1 1 1 1 1 1 1 1 1 ...
+> summary(iris$Sepal.Length)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  4.300   5.100   5.800   5.843   6.400   7.900 
+
+
+#R 기본 데이터셋
+data("iris")
+str(iris)
+summary(iris$Sepal.Length)
+hist(iris$Sepal.Length,xlab='꽃받침 길이', col='skyblue', main='iris 꽃받침 길이 histogram',
+     xlim=c(4.3,7.9))
+
+> summary(iris$Sepal.Width)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  2.000   2.800   3.000   3.057   3.300   4.400 
+
+hist(iris$Sepal.Width,xlab = '꽃받침 너비', col='deepgreen', main='iris 꽃받침 너비 Histogram',
+     +      xlim=c(2.0,4.5))
+
+
+par(mfrow=c(1,2))
+
+hist(iris$Sepal.Width,xlab = '꽃받침 너비', col='skyblue', main='iris 꽃받침 너비 Histogram',
+     xlim=c(2.0,4.5))
+
+#freq=F 확률 밀도
+hist(iris$Sepal.Width, xlab='꽃받침 너비', col='pink',freq=F, 
+     main='iris 꽃받침 너비 확률 밀도', xlim=c(2.0,4.5))
+#밀도를 기준으로 분포곡선 추가
+#밀도 density()
+lines(density(iris$Sepal.Width),col='blue')
+
+#벡터 생성
+x<- seq(2.0,4.5,0.1)
+#히스토그램에 정규분포 곡선 추가
+curve(dnorm(x, mean=mean(iris$Sepal.Width),sd=sd(iris$Sepal.Width)),
+      col='red', add=T)
+
+#산점도 시각화
+#산점도: 죄표상에서 각각의 관찰값들을 점, 특정 문자로 표시하는 그래프
+#난수 생성
+price <- runif(10,min=1,max=100)
+price
+plot(price,col='blue')
+
+#대각선 추가
+par(new=T) # 차트 추가 기존 차트에 덮어씀
+line_chart=1:100
+#대각선 추가:'axes= F' 속성과 'ann=F' 속성 사용
+# x축과 y축의 눈금과 축이름 제거
+plot(line_chart, type='l', col='red', axes= F, ann= F)
+#l:lines
+#p: points
+#b: both(점+선)
+#o: 점+ 선 중첩
+#h: histogram
+#s:왼쪽 값을 기초로 계단모양 연결
+
+#text추가
+text(70,80,'대각선 추가', col='pink')
+
+
+par(mfrow=c(2,2)) #2행 2열 그래프 보기
+plot(price, type = 'l',col='pink', main='선그래프')
+plot(price, type='o', col='skyblue',main=' 선+점 그래프')
+plot(price, type='h',col='orange', main='히스토그래프')
+plot(price, type='s',col='green',main='계단식 그래프')
+
+
+par(mfrow=c(2,2)) #2행 2열 그래프 보기
+plot(price, type = 'o', pch=5, col='pink', main='선그래프')
+plot(price, type='o', psh=15, col='skyblue',main=' 선+점 그래프',cex=1.5)
+plot(price, type='o', psh=20, col='orange', main='히스토그래프',cex=1.5)
+#psh='모양 직접 지정 가능', cex='확대' lwd는 선 굵기
+plot(price, type='o', pch='★', col='green',main='계단식 그래프', cex=1.5)
+plot(price, type='o', pch='★', col='yellow',main='계단식 그래프', cex=1.5, lwd=3)
+
+
+#시계열 데이터: 시간의 흐름에 따라 관찰된 데이터
+data('WWWusage')
+str(WWWusage)
+plot(WWWusage)
+
+kwData <- c(200, 230, 220, 200, 180, 270, 340, 400, 380, 300, 360, 230)
+plot(kwData)
+#시계열 데이터 생성 ts()함수
+#ts(데이터, frequency=간격, start=시작일)
+tskwData <- ts(kwData, start = 1)
+plot(kwData, type='l')
+plot(tskwData)
+

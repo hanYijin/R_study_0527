@@ -1,0 +1,66 @@
+library(KoNLP)
+library(wordcloud2)
+library(httr)
+library(XML)
+
+useNIADic()
+# url 요청
+url <-"https://news.daum.net"
+web <- GET(url)
+tail(web)
+
+#HTML 파싱
+html <- htmlTreeParse(web, useInternalNodes = T, trim = T, encoding = "UTF-8")
+# html root node 찾기
+rootNode <- xmlRoot(html)
+rootNode
+
+news <- xpathApply(rootNode,"//a[@class='link_txt']",xmlValue)
+# 태그명 해당 사이트 검사해서 알아보기!!
+news
+newsPre <- gsub("[\r\n\t]", " ", news) #이스케이프 제거
+newsPre <- gsub("[[:punct:]]", " ", newsPre) #문장 부호 (쉼표 마침표)제거
+newsPre <- gsub("[[:cntrl:]]", " ", newsPre) #특수 문자 제거
+newsPre <- gsub("[a-z]", " ", newsPre) #영어 소문자 제거
+newsPre <- gsub("[A-Z]", " ", newsPre) #영어 대문자 제거
+newsPre <-gsub("\\s+", " ", newsPre) #2개 이상 공백교체
+newsPre
+
+newsData <- newsPre[1:46]
+newsData
+
+# 파일 저장
+write.csv(newsData,"res/daum0527_news.csv", quote = F)
+#quote "" 여부
+
+#파일 읽어오기
+newsData2 <- read.csv("res/daum0527_news.csv", header = T, stringsAsFactors = F)
+newsData2
+
+#칼러명 변경
+names(newsData2) <- c("num","title")
+str(newsData2)
+newsTitle <-newsData2$title
+newsTitle
+
+exNouns <- function(x){ paste(extractNoun(x), collapse = " ")}
+newsNouns <- sapply(newsTitle, exNouns)
+newsNouns
+
+library(tm)
+# 말뭉치 생성
+newCorpus <- Corpus(VectorSource(newsNouns))
+inspect(newCorpus)
+
+tdm <- TermDocumentMatrix(newCorpus, control = list(wordLengths=c(4,16)))
+tdm
+
+tdmDf<-as.data.frame(as.matrix(tdm))
+wordResult <- sort(rowSums(tdmDf), decreasing = T)
+head(wordResult)
+
+myNames <- names(wordResult)
+wordDF <- data.frame(word=myNames, freq=wordResult)
+library(wordcloud2)
+wordcloud2(wordDF, fontFamily = "맑은 고딕", size=1.0, color="random-light",
+           backgroundColor="black", shape="diamond")

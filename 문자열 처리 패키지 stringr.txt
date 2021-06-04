@@ -1,0 +1,116 @@
+#문자열 처리
+가공 처리된 빅데이터를 처리하기 위해서는 필요한 문자열을 적절하게 자르고, 교체, 추출하는 작업이 빈번하게 발생
+
+# 문자열을 효과적으로 처리하는 stringr 패키지
+# str_length() : 문자열 길이 반환
+# str_c() : 문자열 연결(결합), str_join()함수 개선
+# str_stb() : 범위에 해당하는 부분 문자열 (sub string)생성
+# str_split() : 구분자를 기준으로 문자열을 분리하여 부분 문자열 생성
+# str_replace() : 기존 문자열을 특정 문자열로 교체
+# str_extract() : 문자열에서 특정 문자열 패턴의 첫번째 문자열 추출
+# str_extract_all() : 문자열에서 특정 문자열 패턴의 모든 문자열 추출
+# str_locate() : 문자열에서 특정 문자열 패턴의 첫번째 위치 찾기
+# str_locate_all() : 문자열에서 특정 문자열 패턴의 전체 위치 찾기
+
+#문자열 추출
+> str <-"홍길동35이순신45유관순25"
+> str_extract(str,'[1-9]{2}')
+[1] "35"
+> str_extract(str,'[1-9]{1}')
+[1] "3"
+> str_extract(str,'[1-9]{3}')
+[1] NA
+
+> str_extract_all(str,"[1-9]{2}")
+[[1]]
+[1] "35" "45" "25"
+
+> str_extract_all(str,"[1-9]{1}")
+[[1]]
+[1] "3" "5" "4" "5" "2" "5"
+
+> str_extract_all(str,"[1-9]{3}")
+[[1]]
+character(0)
+
+#정규표현식
+> string <- "hongkd105leess1002you25강감찬2055"
+
+> str_extract_all(string,'[a-z]{3}')
+[[1]]
+[1] "hon" "gkd" "lee" "you"
+
+> str_extract_all(string,'[a-z]{3,}')
+[[1]]
+[1] "hongkd" "leess"  "you"   
+
+> str_extract_all(string,'[a-z]{3,5}')
+[[1]]
+[1] "hongk" "leess" "you"  
+
+# 해당 문자열 추출
+> str_extract_all(string,"hong")
+[[1]]
+[1] "hong"
+
+> # 해당 문자열 추출
+> str_extract_all(string,"25")
+[[1]]
+[1] "25"
+
+> # 한글 문자열 추출
+> str_extract_all(string,"[가-힣]{3}")
+[[1]]
+[1] "강감찬"
+
+> # 숫자 문자열 추출
+> str_extract_all(string,"[0-9]{4}")
+[[1]]
+[1] "1002" "2055"
+
+#주민번호나 이메일 등을 검사
+jumin <- "123456-1234567"
+> str_extract(jumin,"[0-9]{6}-[12345][0-9]{6}")
+[1] "123456-1234567"
+> str_extract(jumin,"[0-9]{6}-[123456][0-9]{6}")
+[1] "123456-1234567"
+> str_extract(jumin,"[0-9]{6}-[1][0-9]{6}")
+[1] "123456-1234567"
+> str_extract(jumin,"[0-9]{6}-[9][0-9]{6}")
+[1] NA
+> str_extract(jumin,"[0-9]{6}-[3][0-9]{6}")
+[1] NA
+> #
+> jumin <- "123456-9234567"
+> str_extract(jumin,"[0-9]{6}-[1][0-9]{6}")
+[1] NA
+> str_extract(jumin,"[0-9]{6}-[9][0-9]{6}")
+[1] "123456-9234567"
+
+> str_extract_all(jumin,"\\d{6}-[923]\\d{6}")
+[[1]]
+[1] "123456-9234567"
+
+email <- "gksdlwls123@naver.com"
+> str_extract(email,"\\w{11,}[@]\\w{5,}")
+[1] "gksdlwls123@naver"
+> str_extract(email,"\\w{11,}[,]\\w{5,}")
+[1] NA
+
+
+ name <- "홍길동1234,이순신5678,강감찬1012"
+> str_extract_all(name,"\\w{7}")
+[[1]]
+[1] "홍길동1234" "이순신5678" "강감찬1012"
+
+> str_extract_all(name,"\\w{7#}")
+Error in stri_extract_all_regex(string, pattern, simplify = simplify,  : 
+  Error in {min,max} interval. (U_REGEX_BAD_INTERVAL, context=`\w{7#}`)
+
+> str_extract_all(name,"\\w{7@}")
+Error in stri_extract_all_regex(string, pattern, simplify = simplify,  : 
+  Error in {min,max} interval. (U_REGEX_BAD_INTERVAL, context=`\w{7@}`)
+
+> str_extract_all(name,"\\w{7,}")
+[[1]]
+[1] "홍길동1234" "이순신5678" "강감찬1012"

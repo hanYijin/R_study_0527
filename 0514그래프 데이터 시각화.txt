@@ -1,0 +1,79 @@
+library(googleVis)
+library(ggplot2)
+#분산형 차트 gvisScatterChart (data, options = list (), chartid)
+str(women)
+gScatter<- gvisScatterChart(women, options= list(legend='none', 
+                           lineWidth=2, pointSize=0, title='Womaen', 
+                           vAxis="{title:'weight(lbs)'}",
+                           hAxis="{title:'height(in)'}",
+                           width=300, height=300))
+plot(gScatter)
+#캔들 스틱 차트
+str(OpenClose)
+gCandle <- gvisCandlestickChart(OpenClose,options = list(legend='none'))
+plot(gCandle)
+
+#원형 차트
+str(CityPopularity)
+gPie<-gvisPieChart(CityPopularity)
+plot(gPie)
+
+#게이지 gvisGauge (data, labelvar = "", numvar = "", options = list (), chartid)
+gauge <- gvisGauge(CityPopularity, labelvar = 'city', 
+                   numvar = 'Popularity', option= list(min=0,max=1000))
+plot(gauge)
+
+gauge <- gvisGauge(CityPopularity, options = list(min=0,max=1000, greenFrom=800,
+                                                  greenTo=1000, yellowFrom=500,yellowTo=800,
+                                                  redFrom=0,redTo=500, width=400, height=300))
+plot(gauge)
+
+
+ #지도
+> str(Exports)
+'data.frame':	10 obs. of  3 variables:
+ $ Country: Factor w/ 10 levels "Brazil","France",..: 3 1 10 2 4 6 5 7 8 9
+ $ Profit : num  3 4 5 4 3 2 1 4 5 1
+ $ Online : logi  TRUE FALSE TRUE TRUE FALSE TRUE ...
+
+
+gla <- gvisGeoChart(Exports,locationvar = 'Country', colorvar = 'Profit')
+plot(gla)
+
+# 옵션 추가 projection 투사 = '스타일' 
+glb <- gvisGeoChart(Exports,locationvar = 'Country', colorvar = 'Profit', 
+                    options = list(projection ='kavrayskiy-vii')) # 원근감 추가
+plot(glb)
+
+g2b <- gvisGeoChart(Exports,locationvar = 'Country', colorvar = 'Profit', 
+                    options = list(region='150')) #부분 확대
+plot(g2b)
+
+city <- c('Seoul', 'Daegu','Busan','Gwangju')
+val <- c(12, 8, 10, 6)
+kor<-data.frame(City=city,value=val)
+kor
+#displayMode='regions'부분확대 모드 resolution='provinces' 지방단위
+g3b <- gvisGeoChart(kor,'City', 'value',
+                    options = list(region='KR',displayMode='regions',
+                                   resolution='provinces', width=600, height=400))
+plot(g3b)
+
+
+library(datasets)
+#미국 각 주의 문맹률
+states <- data.frame(state.name, state.x77)
+states
+state.x77
+gStates <- gvisGeoChart(states,'state.name','Illiteracy',
+                        options = list(region='US', displayMode='regions',
+                                       resolution='provinces',
+                                       width=600,height=400))
+plot(gStates)
+
+
+library(readxl)
+#웹서버 상의 데이터 csv 파일 저장
+eq <- read.csv('http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.csv') 
+
+            

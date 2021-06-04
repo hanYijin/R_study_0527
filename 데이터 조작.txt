@@ -1,0 +1,333 @@
+#데이터 조작
+#dplyr 패키지 활요
+# 주요함수
+# filter(): 데이터 셋에서 조건에 맞는 데이터 셋을 추출하는 기능
+# arrange(): 데이터 셋의 특정 칼럼으로 정렬하는 기능
+# select(): 데이터 셋을 대상으로 칼럼을 선택하는 기능
+# mutate(): 데이터 셋에 새로운 칼럼을 추가하는 기능
+# summarise(): 데이터 셋의 특정 칼럼으로 요약 집계 기능
+# group_by(): 데이터 셋으 집단변수을 이용하여 그룹화하는 기능
+# join(): 데이터 프레임과 데이터프레임을 결합하는 기능
+# bind(): 행 또는 열단위로 데이터프레임을 합치는 기능
+# names(): 칼럼 이름을 변경하는 기능
+
+# 파이프 연산자(%>%)를 이용한 함수 적용
+# 데이터프레임을 조작하는데 필요한 함수를 순차적으로 적용할 경우 사용하는 연사자
+install.packages("dplyr")
+library(dplyr)
+
+#칼럼으로 데이터 검색
+
+select(ex,ID,AGE)
+
+      ID   AGE
+   <dbl> <dbl>
+ 1     1    50
+ 2     2    20
+ 3     3    40
+ 4     4    34
+ 5     5    45
+ 6     6    32
+ 7     7    32
+ 8     8    23
+ 9     9    23
+10    10    14
+
+select(ex,ID:AREA)
+      ID SEX     AGE AREA 
+   <dbl> <chr> <dbl> <chr>
+ 1     1 F        50 서울 
+ 2     2 M        20 대구 
+ 3     3 F        40 부산 
+ 4     4 M        34 울산 
+ 5     5 M        45 서울 
+ 6     6 F        32 수원 
+ 7     7 F        32 경기 
+ 8     8 F        23 경기 
+ 9     9 M        23 서울 
+10    10 F        14 서울 
+
+arrange(ex,AGE,Y17_CNT)
+
+      ID SEX     AGE AREA      Y17_AMT Y17_CNT Y16_ATM Y16_CNT     AMT_NEW CNT_NEW    AVG_AMT AVG_GR
+   <dbl> <chr> <dbl> <chr>       <dbl>   <dbl>   <dbl>   <dbl>       <dbl>   <dbl>      <dbl> <chr> 
+ 1    10 F        14 서울  10303404303       9   12000      12 10303416303      21 490638872. A5    
+ 2     2 M        20 대구      6000000      34  300000      22     6300000      56    112500  A4    
+ 3     9 M        23 서울    234566000      13  330000      34   234896000      47   4997787. A4    
+ 4     8 F        23 경기    454333000      21   10000       3   454343000      24  18930958. A4    
+ 5     6 F        32 수원    234622444       5   23000       7   234645444      12  19553787  A3    
+ 6     7 F        32 경기    700000000      32    1000       2   700001000      34  20588265. A3    
+ 7     4 M        34 울산  23445332443       3    3000      34 23445335443      37 633657715. A3    
+ 8     3 F        40 부산   1000000000      24    2000      23  1000002000      47  21276638. A2    
+ 9     5 M        45 서울     34334664       4   32000       5    34366664       9   3818518. A2    
+10     1 F        50 서울      5000000      50  100000      14     5100000      64     79688. A
+
+#내림차순
+arrange(ex,desc(AGE))
+
+#조건에 맞는 데이터 필터링
+# & : and 연산자
+filter(ex, AGE >30 & SEX =="F")
+
+# | : or 연산자
+filter(ex, AGE >30 | SEX =="F")
+
+#요약통계 구하기 
+#summarise(데이터프레임,추가할 칼럼명=함수(칼럼명))
+summarise(ex,avg_AGE=mean(AGE))
+
+  avg_AGE
+    <dbl>
+1    31.3
+# n( )함수 관측치 길이를 구함
+summarise(ex,cnt=n(),avg_AGE=mean(AGE))
+    cnt avg_AGE
+  <int>   <dbl>
+1    10    31.3
+
+# 표준편차: sd()와 분산 계산: var()
+summarise(ex,arrAGE=sd(AGE,na.rm=T),arrAGEVar=var(AGE,na.rm=T))
+  arrAGE arrAGEVar
+   <dbl>     <dbl>
+1   11.5      132.
+
+#집단변수 대상 그룹화
+group_by(ex,AREA)%>% summarise(SUM_AMT17_BY_AREA=sum(Y17_AMT))
+
+  AREA  SUM_AMT17_BY_AREA
+  <chr>             <dbl>
+1 경기         1154333000
+2 대구            6000000
+3 부산         1000000000
+4 서울        10577304967
+5 수원          234622444
+6 울산        23445332443
+
+#데이터프레임 병합
+#inner_join(c1,c2,x): c1과 c2 모두 x칼럼이 존재하는 관측치만 병합
+#left_join(c1,c2,x): 왼쪽 c1의 x칼럼을 기준으로 병합
+#ringt_join(c1,c2,x): 오른쪽 c2의 x칼럼을 기준으로 병합
+#full_join(c1,c2,x): c1, c2 중 x 칼럼이 있으면 모두 병합
+
+#데이터프레임 합치기
+#bind_rows(c1,c2): 행단위
+#bind_cols(c1,c2): 열단위
+# 행기준으로 join: bind_rows()함수
+ex_binjoin <- bind_rows(mData,fData)
+View(ex_binjoin)
+ex_binjoin
+
+jeju_y17 <- read_excel('res/sample1_jeju_17.xlsx')
+jeju_y16 <- read_excel('res/sample1_16.xlsx')
+View(jeju_y16)
+
+#열기준으로 join
+bind_col <- left_join(jeju_y17,jeju_y16, by="ID")
+View(bind_col)
+
+bind_col2 <- right_join(jeju_y17,jeju_y16,by="ID")
+View(bind_col2)
+
+# 내부조인
+bind_col_inner <- inner_join(jeju_y17, jeju_y16, by="ID")
+View(bind_col_inner)
+
+
+bind_col_full <- full_join(jeju_y17,jeju_y16,by="ID")
+View(bind_col_full)
+
+#칼럼명 수정하기
+#rename(데이터프레임, 변경후=변경전)
+ex2<-rename(ex,age=AGE)
+ex2
+
+#reshape2 패키지활용
+#melt(), dcast()/acast() 함수만을 적용하여 집단변수를 통해 데이터의 구조를 유연하게 변경해주는 기능 제공
+#melt(데이터,id.vars= 식별자 컬럼들, measure.vars= 측정치 컬럼들)
+# measure.vars가 생략되면 id.vars에 해당하지 않은 모든 컬럼이 측정치 컬럼이 됨.
+
+#melt()함수는 식별자id, 측정 변수 variable, 측정치 value 형태로 데이터를 재구성하는 함수
+
+names(airquality)<-tolower(names(airquality))
+head(airquality)
+melt_Test3<- melt(airquality,id.vars = c('month','day'),variable.name = 'climate_variable',value.name = 'climate_value')
+View(melt_Test3)
+> head(melt_Test3)
+  month day climate_variable climate_value
+1     5   1            ozone            41
+2     5   2            ozone            36
+3     5   3            ozone            12
+4     5   4            ozone            18
+5     5   5            ozone            NA
+6     5   6            ozone            28
+
+melt_air <- melt(airquality,id=c('month','day'),na.rm=T)
+> head(melt_air)
+  month day variable value
+1     5   1    ozone    41
+2     5   2    ozone    36
+3     5   3    ozone    12
+4     5   4    ozone    18
+6     5   6    ozone    28
+7     5   7    ozone    23
+
+ melt_test2 <- melt(airquality, 
++                    #기준열
++                    id.vars = c('month','day'),
++                    #변환열
++                    measure.vars = 'ozone')
+> head(melt_test2)
+  month day variable value
+1     5   1    ozone    41
+2     5   2    ozone    36
+3     5   3    ozone    12
+4     5   4    ozone    18
+5     5   5    ozone    NA
+6     5   6    ozone    28
+
+# acast(): vector, matrix, array 변환
+# dcast(): data frame 변환
+
+aq_melt <- melt(airquality, id=c('month','day'), na.rm=T)
+head(aq_melt)
+
+aq_dcast <- dcast(aq_melt, month + day ~ variable)
+> head(aq_dcast)
+  month day ozone solar.r wind temp
+1     5   1    41     190  7.4   67
+2     5   2    36     118  8.0   72
+3     5   3    12     149 12.6   74
+4     5   4    18     313 11.5   62
+5     5   5    NA      NA 14.3   56
+6     5   6    28      NA 14.9   66
+
+class(aq_dcast)
+[1] "data.frame"
+
+###########################################################################
+# 데이터 조작_ dplyr 패키지
+#
+# 1. filter : 조건에 맞는 행 추출
+# 2. arrange: 지정한 열을 기준으로 정렬
+# 3. select : 열 추출
+# 4. mutate : 열 추가
+# 5. summarize : 데이터 요약
+# 6. distinct : 중복 값 제거
+# 7. group_by :  데이터 그룹 생성
+# 8. sample_n : n개의 샘플 추출
+# 9. sample_frac : n% 비율의 샘플 추출
+# 10. %>% : 함수 연결
+
+library(dplyr)
+# 행의 갯수
+nrow(mtcars)
+str(mtcars) 
+
+#filter(데이터프레임,조건)
+filter(mtcars,cyl == 4)
+# 조건 &연산자
+filter(mtcars,cyl >= 6 & mpg > 20)
+# wt를 기준으로 오름차순, hp는 내림차순 desc
+arrange(mtcars,wt,desc(hp))
+
+#select(데이터프레임, 칼럼명,...):  특정 열 추출 
+select(mtcars,am,gear) # am, gear 속성을 추출
+select(mtcars,mpg,cyl,carb)
+
+#mutate(데이터, 새로 추가할 칼러명='값')
+mutate(mtcars,years="1974")
+
+head(mutate(mtcars, mpg_rank=rank(mpg)))
+
+
+# 중복값 제거
+distinct(mtcars,cyl)
+distinct(mtcars,cyl,gear)
+                  cyl gear
+Mazda RX4           6    4
+Datsun 710          4    4
+Hornet 4 Drive      6    3
+Hornet Sportabout   8    3
+Toyota Corona       4    3
+Porsche 914-2       4    5
+Ford Pantera L      8    5
+Ferrari Dino        6    5
+
+summarise(mtcars,cyl_mean=mean(cyl), cyl_min=min(cyl),cyl_max=max(cyl))
+summarise(mtcars, mean(cyl), min(cyl), max(cyl))
+
+> summarise(mtcars,cyl_mean=mean(cyl), cyl_min=min(cyl),cyl_max=max(cyl))
+  cyl_mean cyl_min cyl_max
+1   6.1875       4       8
+> summarise(mtcars, mean(cyl), min(cyl), max(cyl))
+  mean(cyl) min(cyl) max(cyl)
+1    6.1875        4        8
+
+#데이터 그룹
+gr_cyl <- group_by(mtcars,cyl)
+gr_cyl
+#gr_cyl에서 cyl별 개수 요약 정보
+summarise(gr_cyl,n())
+
+> summarise(gr_cyl,n())
+# A tibble: 3 x 2
+    cyl `n()`
+  <dbl> <int>
+1     4    11
+2     6     7
+3     8    14
+
+# gear 중복 값을 제외하고 cyl별 개수 요약 정보
+summarise(gr_cyl,n_distinct(gear))
+    cyl `n_distinct(gear)`
+  <dbl>              <int>
+1     4                  3
+2     6                  3
+3     8                  2
+
+# 전체 데이터에서 랜덤 데이터 추출
+sample_n(mtcars,10) #개수 지정
+sample_frac(mtcars,0.2) # % 지정
+
+#cyl별로 그룹으로 묶고 개수로 요약
+# %>% : 파이프 라인 왼쪽 결과를 오른쪽으로 넘겨줌
+group_by(mtcars,cyl) %>% summarise(n())
+    cyl `n()`
+  <dbl> <int>
+1     4    11
+2     6     7
+3     8    14
+
+mp_rank <- mutate(mtcars, mpg_rank = rank(mpg))
+# mp_rank를 기준으로 오름차순 정렬
+arrange(mp_rank,mpg_rank)
+# 위와 동일한 결과 출력 하나의 동작으로 연결
+mutate(mtcars, mpg_rank=rank(mpg)) %>% arrange(mp_rank,mpg_rank)
+
+# 연습
+# 1. library(dplyr), libray(hflights) 설치
+library(dplyr)
+install.packages("hflights")
+library("hflights")
+head(hflights)
+str(hflights)
+class(hflights)
+View(hflights)
+# 2. 1월 2일 데이터 구하기
+head(filter(hflights,Month==1 & DayofMonth==2))
+# 3. 1월 or 2월 데이터 추출
+month1_2 <- filter(hflights,Month==1 | Month==2)
+View(month1_2)
+# 4. 도착시간을 기준으로 오름차순 정렬
+arrange(hflights,DepTime)
+# 5. Year, Month, DepTime, ArrTime 데이터 검색
+select(hflights,Year,Month,DepTime,ArrTime)
+# 6. 도착지연 시간을 구한 후 새로운 컬럼 추가
+# 도착지연 시간: ArrTime-DepTime  
+View(mutate(hflights,DelayTime= ArrTime - DepTime))
+# 7. 비행시간 평균 (NA 제거)
+mean(hflights$AirTime,na.rm=T)
+# 8. 도착시간(ArrTime)의 표준편차, 분산 구하기
+sd(hflights$ArrTime,na.rm = T)
+var(hflights$ArrTime,na.rm=T)
+

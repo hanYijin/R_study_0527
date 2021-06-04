@@ -1,0 +1,235 @@
+텍스트 마이닝
+비정형 데이터 처리
+
+1. 토픽 분석: 텍스트 데이터를 대상으로 단어를 추출하고, 이를 단어 사전과 비교하여
+단어의 출현 빈도수를 분석하는 텍스트마이닝 분석과정
+
+# KoNLP: 사전을 통해 문서에 포함된 단어의 품사를 분석
+
+#패키지 설치
+#빈도수별 단어 구름형태 표현, 단어 빈도 시각화
+install.packages("wordcloud2")
+# 세종 사전
+install.packages("Sejong")
+# hash테이블
+install.packages("hash")
+
+install.packages("rJava")
+# 텍스트 분석
+install.packages("tau")
+# 텍스트 가공
+install.packages("tm")
+install.packages("devtools")
+install.packages("KoNLP")
+
+remotes::install_github('haven-jeon/KoNLP',upgrade = "never",INSTALL_opts=c("--no-multiarch"))
+
+
+library("KoNLP")
+#시스템 사전
+useSystemDic()
+# 세종 사전
+useSejongDic()
+>Backup was just finished!
+370957 words dictionary was built.
+
+# NIA 사전
+useNIADic()
+
+# 1. 형태소 분석
+# 세종사전 기반
+useSejongDic()
+
+docData <- "롯데마트가 판매하고 있는 흑마늘 양념 치킨이 논란이 되고 있다."
+# 1) 명사 추출
+extractNoun(docData)
+
+> extractNoun(docData)
+[1] "롯데마트" "판매"     "흑마늘"   "양념"     "치킨"     "논란" 
+
+# KAIST tag 9개 품사
+SimplePos09(docData)
+>
+$롯데마트가
+[1] "롯데마트/N+가/J"
+
+$판매하고
+[1] "판매/N+하고/J"
+
+$있는
+[1] "있/P+는/E"
+
+$흑마늘
+[1] "흑마늘/N"
+
+$양념
+[1] "양념/N"
+
+$치킨이
+[1] "치킨/N+이/J"
+
+$논란이
+[1] "논란/N+이/J"
+
+$되고
+[1] "되/P+고/E"
+
+$있다
+[1] "있/P+다/E"
+
+$.
+[1] "./S"
+
+> SimplePos22(docData)
+$롯데마트가
+[1] "롯데마트/NC+가/JC"
+
+$판매하고
+[1] "판매/NC+하고/JC"
+
+$있는
+[1] "있/PX+는/ET"
+
+$흑마늘
+[1] "흑마늘/NC"
+
+$양념
+[1] "양념/NC"
+
+$치킨이
+[1] "치킨/NC+이/JC"
+
+$논란이
+[1] "논란/NC+이/JC"
+
+$되고
+[1] "되/PV+고/EC"
+
+$있다
+[1] "있/PX+다/EF"
+
+$.
+[1] "./SF"
+
+> MorphAnalyzer(docData)
+$롯데마트가
+[1] "롯데마트/ncn+가/jcc"            "롯데마트/ncn+가/jcs"           
+[3] "롯데마트/ncn+가/ncn"            "롯데마트/ncn+이/jp+가/ecc"     
+[5] "롯데/ncn+마트/ncn+가/jcc"       "롯데/ncn+마트/ncn+가/jcs"      
+[7] "롯데/ncn+마트/ncn+가/ncn"       "롯데/ncn+마트/ncn+이/jp+가/ecc"
+
+$판매하고
+ [1] "판매/ncpa+하고/jcj"             "판매/ncpa+하고/jct"            
+ [3] "판매/ncpa+하고/ncn"             "판매/ncpa+하고/jcs"            
+ [5] "판매/ncpa+하/xsva+고/ecc"       "판매/ncpa+하/xsva+고/ecs"      
+ [7] "판매/ncpa+하/xsva+고/ecx"       "판매/ncpa+하/ncn+고/jcj"       
+ [9] "판매/ncpa+하/ncn+고/jcs"        "판매/ncpa+하/ncn+이/jp+고/ecc" 
+[11] "판매/ncpa+하/ncn+이/jp+고/ecs"  "판매/ncpa+하/ncn+이/jp+고/ecx" 
+[13] "판매/ncpa+하/xsva+어/ef+고/jcr" "판매/ncpa+하/xsva+어/ep+고/ecc"
+[15] "판매/ncpa+하/xsva+어/ep+고/ecs" "판매/ncpa+하/xsva+어/ep+고/ecx"
+[17] "판매/ncn+하고/jcj"              "판매/ncn+하고/jct"             
+[19] "판매/ncn+하고/ncn"              "판매/ncn+하고/jcs"             
+[21] "판매/ncn+하/ncn+고/jcj"         "판매/ncn+하/ncn+고/jcs"        
+[23] "판매/ncn+하/ncn+이/jp+고/ecc"   "판매/ncn+하/ncn+이/jp+고/ecs"  
+[25] "판매/ncn+하/ncn+이/jp+고/ecx"   "판/xp+매하/ncn+고/jcj"         
+[27] "판/xp+매하/ncn+고/ncn"          "판/xp+매하/ncn+고/jcs"         
+[29] "판/xp+매하/ncn+이/jp+고/ecc"    "판/xp+매하/ncn+이/jp+고/ecs"   
+[31] "판/xp+매하/ncn+이/jp+고/ecx"    "판/xp+매/ncn+하고/jcj"         
+[33] "판/xp+매/ncn+하고/jct"          "판/xp+매/ncn+하고/jcs"         
+
+$있는
+[1] "있/paa+는/etm" "있/px+는/etm" 
+
+$흑마늘
+[1] "흑마늘/ncn"      "흑마/ncn+늘/ncn"
+
+$양념
+[1] "양념/ncn"     "양/xp+념/ncn"
+
+$치킨이
+[1] "치킨/ncn+이/jcc"     "치킨/ncn+이/jcs"     "치킨/ncn+이/ncn"     "치/xp+킨/ncn+이/jcc"
+[5] "치/xp+킨/ncn+이/jcs"
+
+$논란이
+[1] "논란/ncpa+이/jcc" "논란/ncpa+이/jcs" "논란/ncpa+이/ncn" "논란/ncn+이/jcc" 
+[5] "논란/ncn+이/jcs"  "논란/ncn+이/ncn" 
+
+$되고
+ [1] "되고/mag"            "되/nbu+고/jcj"       "되/nbu+고/jcs"      
+ [4] "되/nbu+이/jp+고/ecc" "되/nbu+이/jp+고/ecs" "되/nbu+이/jp+고/ecx"
+ [7] "되/paa+고/ecc"       "되/paa+고/ecs"       "되/paa+고/ecx"      
+[10] "되/pvg+고/ecc"       "되/pvg+고/ecs"       "되/pvg+고/ecx"      
+[13] "되/px+고/ecc"        "되/px+고/ecs"        "되/px+고/ecx"       
+[16] "되/ncn+고/jcj"       "되/ncn+고/jcs"       "되/ncn+이/jp+고/ecc"
+[19] "되/ncn+이/jp+고/ecs" "되/ncn+이/jp+고/ecx" "되/xp+고/ncn"       
+
+$있다
+[1] "있/paa+다/ef" "있/px+다/ef" 
+
+$.
+[1] "./sf" "./sy"
+
+exData<-c("아버지께서 방에 스르륵 들어가신다.")
+extractNoun(exData) # 명사 추출
+MorphAnalyzer(exData)
+
+> useSejongDic()
+
+> chData <- c("스르륵")
+
+> #mag 일반부사 -> nch 명사로 사용
+> buildDictionary(ext_dic = "woorimalsam",
++                 user_dic = data.frame(chData,c("nch")),replace_usr_dic = T)
+
+nch	
+Error in buildDictionary(ext_dic = "woorimalsam", user_dic = data.frame(chData,  : 
+  Unsupported tag names on user_dic!
+
+> extractNoun(exData)
+[1] "아버지" "방"     "스르륵"
+
+txtData <-"R은 오픈소스로 통계, 기계학습, 금융, 생물정보학, 그래픽스에 이르는 다양한 
+통계 패키지를 갖추고 있는 좋은 프로그램이다."
+
+extractNoun(txtData)
+[1] "R"        "오픈"     "소스"     "통계"     "기계"     "학습"     "금융"    
+ [8] "생물"     "정보학"   "그래픽스" "다양"     "한"       "통계"     "패키지"  
+[15] "프로그램"
+
+exData <-c("오픈소스","기계학습","생물정보학","다양한")
+
+buildDictionary(ext_dic = "woorimalsam",
+                user_dic = data.frame(exData,c("ncn")),replace_usr_dic = T)
+
+> extractNoun(txtData)
+ [1] "R"          "오픈소스"   "통계"       "기계학습"   "금융"       "생물정보학"
+ [7] "그래픽스"   "다양한"     "통계"       "패키지"     "프로그램" 
+
+
+
+library(dplyr)
+library(ggplot2)
+ 
+txtData2 <- "1993년 뉴질랜드에 위치한 오클랜드 대학교에서 개발된 통계 및 그래프 작업을 위한 인터프리터 프로그래밍 언어이다. 
+R이 가지는 특이사항 중 하나로, color를 colour라고 쓰는 것 또한 인정된다. 
+영국식 영어를 사용하는 뉴질랜드에서 개발돼서 얻은 특징인듯."
+
+sejongRes <- MorphAnalyzer(txtData2)
+sum(sapply(sejongRes, length))
+>[1] 193
+
+useNIADic()
+niaRes<-MorphAnalyzer(txtData2)
+sum(sapply(niaRes, length))
+>[1] 215
+
+library(data.table)
+install.packages("data.table")
+rbindRes <- rbind(data.table(dic=names(sejongRes),count=sapply(sejongRes, length),kind="sjong 사전"),
+                  data.table(dic= names(niaRes),count=sapply(niaRes,length),kind="nia 사전"))
+
+ggplot(rbindRes,aes(dic, count))+
+  geom_bar(stat="identity", aes(fill=kind),Position="dodge")+
+  coord_flip()+ggtitle("형태소 분석 결과 빈도")
+
+

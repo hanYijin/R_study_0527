@@ -1,0 +1,497 @@
+#List 자료구조(자료구조 중첩) 
+#다른 자료형과 자료구조(벡터, 행열, 리스트, 데이터프레임)를 객체로 생성
+#하나의 메모리 영역에는 키(key)와 값(value)이 한 쌍으로 저장
+# 리스트 생성 함수: list()
+# 리스트 자료 처리 함수: unlist(), lapply(), sapply()
+
+#Key 생략한 list 생성하기
+#기본키는 [[n]] 형식
+> list1 <- list(c(1,2,3), c("제니","리사","로제"),TRUE,12.5)
+> list1
+[[1]] 
+[1] 1 2 3
+
+[[2]]
+[1] "제니" "리사" "로제"
+
+[[3]]
+[1] TRUE
+
+[[4]]
+[1] 12.5
+----------------------------------------------------------------------------------------------
+> list2 <- list(c("제니","로제","리사"),c(20,30,40))
+> names(list2) <- c('NAME','AGE')
+> list2
+$NAME
+[1] "제니" "로제" "리사"
+
+$AGE
+[1] 20 30 40
+
+> print(list2[1])
+$NAME
+[1] "제니" "로제" "리사"
+
+> print(list2$NAME)
+[1] "제니" "로제" "리사"
+
+> print(list2$NAME[1])
+[1] "제니"
+
+> print(list2$AGE[3])
+[1] 40
+
+
+blackpink <- list(name=c("제니","로제","리사","지수"),age=c(26,25,25,27),address=c("뉴질랜드","호주","태국","서울"),
++                gender=c("여자","여자","여자","여자"),home=c("YG","yg","와이쥐","Yg"))
+> blackpink
+$name
+[1] "제니" "로제" "리사" "지수"
+
+$age
+[1] 26 25 25 27
+
+$address
+[1] "뉴질랜드" "호주"     "태국"     "서울"    
+
+$gender
+[1] "여자" "여자" "여자" "여자"
+
+$home
+[1] "YG"     "yg"     "와이쥐" "Yg"    
+
+> blackpink$name
+[1] "제니" "로제" "리사" "지수"
+
+> blackpink$name[1]
+[1] "제니"
+> blackpink$address[2]
+[1] "호주"
+
+#값 변경
+blackpink$age[1] <-100
+blackpink$address[4] <-"한국"
+>blackpink
+$name
+[1] "제니" "로제" "리사" "지수"
+
+$age
+[1] 100  25  25  27
+
+$address
+[1] "뉴질랜드" "호주"     "태국"     "한국"    
+
+$gender
+[1] "여자" "여자" "여자" "여자"
+
+$home
+[1] "YG"     "yg"     "와이쥐" "Yg" 
+
+#데이터 프레임 data frame
+
+id <- c(1,2,3,4,5)
+gender <- c('m','F','m','F','F')
+age <- c(25,32,45,51,12)
+addr <- c('대구','서울','수원','울산','부산')
+datavalue <- data.frame(id,gender,age,addr)
+
+> datavalue
+  id gender age addr
+1  1      m  25 대구
+2  2      F  32 서울
+3  3      m  45 수원
+4  4      F  51 울산
+5  5      F  12 부산
+
+# 소스 코드 관점 mode
+> mode(datavalue)
+[1] "list"
+
+#추상적인 관점 class
+> class(datavalue)
+[1] "data.frame"
+
+> View(datavalue)
+데이터를 보기 좋게 테이블 형식으로 보여줌
+
+#데이터프레임 편집기
+dataval <-edit(data.frame())
+dataval
+
+_________________________________________________________________
+#데이터 프레임 생성 방법 1.
+
+id_r1 <- c('a1','a2','a3','a4')
+name_r1 <-c('제니','리사','로제','지수')
+stu_r1 <- data.frame(id_r1,name_r1)
+> stu_r1
+  id_r1 name_r1
+1    a1    제니
+2    a2    리사
+3    a3    로제
+4    a4    지수
+
+#데이터 프레임 생성 방법 2.
+
+ stu_r2 <- data.frame(id_r2 = c('b1','b2','b3','b4'), name_r2=c('한이','한수','한동','다발'))
+> stu_r2
+  id_r2 name_r2
+1    b1    한이
+2    b2    한수
+3    b3    한동
+4    b4    다발
+
+# key 변경
+names(stu_r1) <- c('ID','NAME')
+names(stu_r2) <- names(stu_r1)
+> stu_r1
+  ID NAME
+1 a1 제니
+2 a2 리사
+3 a3 로제
+4 a4 지수
+> stu_r2
+  ID NAME
+1 b1 한이
+2 b2 한수
+3 b3 한동
+4 b4 다발
+
+
+#행 결합
+studRbind <- rbind(stu_r1,stu_r2)
+> studRbind
+  ID NAME
+1 a1 제니
+2 a2 리사
+3 a3 로제
+4 a4 지수
+5 b1 한이
+6 b2 한수
+7 b3 한동
+8 b4 다발
+
+ #열 결합
+ stu_c1 <- data.frame(id=c("c1","c2","c3"),name=c('김씨','한씨','홍씨'))
+ names(stu_c1) <- c('ID','NAME')
+> stu_c1
+  ID NAME
+1 c1 김씨
+2 c2 한씨
+3 c3 홍씨
+
+ stu_c2 <- data.frame(age= c(20,30,40),gender=c('M','F','F'))
+ names(stu_c2) <- c('AGE','GENDER')
+> stu_c2
+  AGE GENDER
+1  20      M
+2  30      F
+3  40      F
+
+studCbind <- cbind(stu_c1,stu_c2)
+> studCbind
+  ID NAME AGE GENDER
+1 c1 김씨  20      M
+2 c2 한씨  30      F
+3 c3 홍씨  40      F
+
+___________________________________________________________________________
+# 내부 join
+> stu_j1 <- data.frame(id=c("c1","c2","c3"),name=c('김씨','한씨','홍씨'))
+> names(stu_j1) <- c('ID','NAME')
+> stu_j1
+  ID NAME
+1 c1 김씨
+2 c2 한씨
+3 c3 홍씨
+
+> stu_j2 <- data.frame(id=c("c2","c3","c4"),gender=c('M','F','F'))
+> names(stu_j2) <- c('ID','GENDER')
+> stu_j2
+  ID GENDER
+1 c2      M
+2 c3      F
+3 c4      F
+
+> studJoin <- merge(x= stu_j1, y=stu_j2, by='ID')
+> studJoin
+  ID NAME GENDER
+1 c2 한씨      M
+2 c3 홍씨      F
+________________________________________________________________________________
+#문자열 처리
+#라이브러리 설치
+install.packages('stringr')
+library(stringr) # 라이브러리 설치 후 사용
+
+strData <- c('제니26리사25로제25')
+#stringr라이브러리 함수 
+#str_extract
+> str_extract(strData,'[1-9]{2}')
+[1] "26"
+
+#str_extract_all
+> str_extract_all(strData, '[1-9]{2}')
+[[1]]
+[1] "26" "25" "25"
+
+strData1<- 'hongkd1051eess1002you25감감찬2055'
+> str_extract_all(strData1,'[a-z]{3}') # 3자 연속하는 경우 추출
+[[1]]
+[1] "hon" "gkd" "ees" "you"
+
+> str_extract_all(strData1,'[a-z]{3,}') # 3자 이상 연속하는 경우 추출
+[[1]]
+[1] "hongkd" "eess"   "you"   
+
+> str_extract_all(strData1,'[a-z]{3,5}') # 3~5자 연속하는 경우 추출
+[[1]]
+[1] "hongk" "eess"  "you"  
+
+# 해당문자열 추출
+str_extract_all(strData1,'hong')
+str_extract_all(strData1,'25')
+
+> str_extract_all(strData1,'hong')
+[[1]]
+[1] "hong"
+
+> str_extract_all(strData1,'25')
+[[1]]
+[1] "25"
+
+ #한글 문자열 추출
+> str_extract_all(strData1,'[가-힣]{3}')
+[[1]]
+[1] "감감찬"
+
+#알파벳 문자열 추출
+> str_extract_all(strData1,'[a-z]{3}')
+[[1]]
+[1] "hon" "gkd" "ees" "you"
+
+#숫자 추출
+> str_extract_all(strData1,'[0-9]{4}')
+[[1]]
+[1] "1051" "1002" "2055"
+
+ str_extract_all(strData1,'[가-힣]{4}')
+[[1]]
+character(0)
+
+> str_extract_all(strData1,'[0-9]{3}')
+[[1]]
+[1] "105" "100" "205"
+---------------------------------------------
+
+#포함하지 않은 문자열 추출
+#[^a-z]: 알파벳 제외 문자열 추출
+
+> str_extract_all(strData1,'[^a-z]')
+[[1]]
+ [1] "1"  "0"  "5"  "1"  "1"  "0"  "0"  "2"  "2"  "5"  "감" "감" "찬" "2"  "0"  "5"  "5" 
+
+> str_extract_all(strData1,'[^a-z]{4}')
+[[1]]
+[1] "1051"   "1002"   "25감감" "찬205"
+
+ #한글을 제외한 문자열 추출
+> str_extract_all(strData1,'[^가-힣]{5}')
+[[1]]
+[1] "hongk" "d1051" "eess1" "002yo"
+
+> # 숫자를 제외한 문자열 추출
+> str_extract_all(strData1,'[^0-9]{3}')
+[[1]]
+[1] "hon"    "gkd"    "ees"    "you"    "감감찬"
+
+-------------------------------------------------------------------
+name <-'홍길동1234,이순신5678,김길동1011'
+> str_extract_all(name,'\\w{5,}')
+[[1]]
+[1] "홍길동1234" "이순신5678" "김길동1011"
+
+> str_extract_all(name, '\\d')
+[[1]]
+ [1] "1" "2" "3" "4" "5" "6" "7" "8" "1" "0" "1" "1"
+
+> str_match_all(name,'\\d')
+[[1]]
+      [,1]
+ [1,] "1" 
+ [2,] "2" 
+ [3,] "3" 
+ [4,] "4" 
+ [5,] "5" 
+ [6,] "6" 
+ [7,] "7" 
+ [8,] "8" 
+ [9,] "1" 
+[10,] "0" 
+[11,] "1" 
+[12,] "1" 
+
+#문자열 길이 반환
+size <- str_length(name)
+> size
+[1] 23
+
+#인데스 값 시작, 끝
+> str_locate(strData1,'감감찬')
+     start end
+[1,]    24  26
+
+#문자열 슬라이싱
+#인덱스 1에서 부터 문자열 길이-10까지의 문자열 추출
+strDatasub <- str_sub(strData1, 1, str_length(strData1)-10)
+> strDatasub
+[1] "hongkd1051eess1002yo"
+
+#문자열 대문자로 변경
+> upstr <- str_to_upper(strDatasub); upstr
+[1] "HONGKD1051EESS1002YO"
+
+ # 소문자로 변경
+> str_to_lower(upstr)
+[1] "hongkd1051eess1002yo"
+
+
+________________________________________________________________________________
+#주민번호 
+jumin <- '123456-1234567'
+#주민번호 앞자리 추출
+str_extract(jumin,'[0-9]{6}-')
+
+> str_extract(jumin,'[0-9]{6}-[1-4][0-9]{6}')
+[1] "961116-2904567"
+
+
+
+#구조 보기
+> str(mtcars)
+'data.frame':	32 obs. of  11 variables:
+ $ mpg : num  21 21 22.8 21.4 18.7 18.1 14.3 24.4 22.8 19.2 ...
+ $ cyl : num  6 6 4 6 8 6 8 4 4 6 ...
+ $ disp: num  160 160 108 258 360 ...
+ $ hp  : num  110 110 93 110 175 105 245 62 95 123 ...
+ $ drat: num  3.9 3.9 3.85 3.08 3.15 2.76 3.21 3.69 3.92 3.92 ...
+ $ wt  : num  2.62 2.88 2.32 3.21 3.44 ...
+ $ qsec: num  16.5 17 18.6 19.4 17 ...
+ $ vs  : num  0 0 1 1 0 1 0 1 1 1 ...
+ $ am  : num  1 1 1 0 0 0 0 0 0 0 ...
+ $ gear: num  4 4 4 3 3 3 3 4 4 4 ...
+ $ carb: num  4 4 1 1 2 1 4 2 2 4 ...
+
+> # 상위 6개의 데이터 
+> head(mtcars)
+                   mpg cyl disp  hp drat    wt  qsec vs am gear carb
+Mazda RX4         21.0   6  160 110 3.90 2.620 16.46  0  1    4    4
+Mazda RX4 Wag     21.0   6  160 110 3.90 2.875 17.02  0  1    4    4
+Datsun 710        22.8   4  108  93 3.85 2.320 18.61  1  1    4    1
+Hornet 4 Drive    21.4   6  258 110 3.08 3.215 19.44  1  0    3    1
+Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2
+Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1
+
+#하위 6개의 데이터
+> tail(mtcars)
+                mpg cyl  disp  hp drat    wt qsec vs am gear carb
+Porsche 914-2  26.0   4 120.3  91 4.43 2.140 16.7  0  1    5    2
+Lotus Europa   30.4   4  95.1 113 3.77 1.513 16.9  1  1    5    2
+Ford Pantera L 15.8   8 351.0 264 4.22 3.170 14.5  0  1    5    4
+Ferrari Dino   19.7   6 145.0 175 3.62 2.770 15.5  0  1    5    6
+Maserati Bora  15.0   8 301.0 335 3.54 3.570 14.6  0  1    5    8
+Volvo 142E     21.4   4 121.0 109 4.11 2.780 18.6  1  1    4    2
+
+#행과 열 개수 출력
+> dim(mtcars)
+[1] 32 11
+
+#데이터 자료 구조 길이, 칼럼(열) 길이
+> length(mtcars)
+[1] 11
+
+#데이터 자료 구조 길이, 칼럼(열) 길이
+> length(mtcars)
+[1] 11
+
+# 칼러명 출력
+> names(mtcars)
+ [1] "mpg"  "cyl"  "disp" "hp"   "drat" "wt"   "qsec" "vs"   "am"   "gear" "carb"
+
+class(mtcars)
+[1] "data.frame"
+> mode(mtcars)
+[1] "list"
+
+> sapply(mtcars,class)
+      mpg       cyl      disp        hp      drat        wt      qsec        vs        am      gear      carb 
+"numeric" "numeric" "numeric" "numeric" "numeric" "numeric" "numeric" "numeric" "numeric" "numeric" "numeric" 
+--------------------------------------------------------------------------------------------------------------------------------------
+#연습문제
+#1. "2021-04-29 수입3000원",
+#   "2021-04-30 수입4500원",
+#   "2021-05-01 수입5500원"
+#1번의 문자열을 이용하여 아래와 같이 출력
+#출력형태>> "3000원" "4500원" "5500원"
+
+library(stringr)
+date1 <-"2021-04-29 수입3000원"
+date2 <-"2021-04-30 수입4500원"
+date3 <-"2021-05-01 수입5500원"
+p1 <- str_extract_all(date1,"3000원")
+p1
+p2<-str_sub(date2,14,18)
+p2
+p3<- str_sub(date3,14,18)
+p3
+#2. 1번에서 '-'를 '/'로 변경
+# --> str_replace_all()
+date1<- str_replace_all(date1,"-","/")
+date1
+date2 <- str_replace_all(date2,"-","/")
+date2
+date3<- str_replace_all(date3,"-","/")
+date3
+
+#3. 임의의 국어, 영어, 수학 점수를 가지는 벡터 3개 생성
+kor <- c(90,85,98)
+eng <- c(100,89,79)
+mat <- c(98,85,99)
+
+#4. 3번 벡터를 가지는 dataframe 생성
+score <- data.frame(kor,eng,mat)
+score
+
+#5. 국, 영, 수 dataframe에서 최대값 구하기
+max_score <- apply(score,2,max)
+max_score
+
+# apply(데이터 프레임, 행/열(1/2), 함수) 형식: 데이터 프레임 자료에 함수를 적용하는 방법
+#sum 합계 / max: 최댓값
+
+#연습문제
+#1. "2021-04-29 수입3000원",
+#   "2021-04-30 수입4500원",
+#   "2021-05-01 수입5500원"
+#1번의 문자열을 이용하여 아래와 같이 출력
+#출력형태>> "3000원" "4500원" "5500원"
+suip<- c("2021-04-29 수입3000원",
+          "2021-04-30 수입4500원",
+          "2021-05-01 수입5500원")
+price<- str_extract_all(suip,'[0-9]{4}[가-힣]{1}')
+price
+#2. 1번에서 '-'를 '/'로 변경
+# --> str_replace_all()
+str_replace_all(suip,'-','/')
+
+#3. 임의의 국어, 영어, 수학 점수를 가지는 벡터 3개 생성
+kor <- c(90,85,98)
+eng <- c(100,89,79)
+mat <- c(98,85,99)
+#4. 3번 벡터를 가지는 dataframe 생성
+score <- data.frame(국어=kor,영어=eng,수학=mat)
+score
+#5. 국, 영, 수 dataframe에서 최대값 구하기
+apply(score,1,max) #행 기준
+apply(score,2,max) #열 기준

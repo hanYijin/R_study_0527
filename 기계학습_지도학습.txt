@@ -1,0 +1,165 @@
+# 인공지능 > 머신러닝(기계학습습) > 딥러닝(인공신경망)
+# 1. 지도학습
+# - 훈련데이터와 정답을 가지며 데이터를 분류/예측하는 함수를 만들어내는 기계학습
+# - 데이터 분류(레이블링) 작업에 많은 비용과 시간이 소요
+# 1) 분류(Classfication)
+# - 데이터가 범주형 변수인 경우를 예측
+# - 데이터에 label을 할당하여 분류.
+# - label 2개: 이진분류, 3개이상: 다중 클래스 분류
+# - KNN(K-Nearest Neighbors), 나이브 베이즈, 결정트리, 서포트 벡터머신, 아프리오 알고리즘
+# 2) 회귀(Regression)
+# - 연속값을 예측
+# - 선형회귀, 신경망
+
+# 2. 비지도 학습
+# - 정답이 없이 훈련데이터만으로 숨겨진 패턴을 탐색하는 기계학습
+# 1) 클러스터링: 특정기준에 따라 유사한 데이터 사레들을 하나의 세트로 그룹화하고 고유한 
+#    패턴을 찾기위해 개별 그룹차원에서 분석 수행.
+# - 연관 규칙(apriori): 대규모 거래 데이터로부터 함께 구매될 규칙을 도출하여 고객이 
+# 특정 상품 구매 시 이와 연관성이 높은 상품을 추천하는 것
+# - K-평균 알고리즘(K-means clustering algorithm):
+# 주어진 데이터를 k개 클러스터로 묶고 각 클러스터와 거리차이의 분산을 최소화하는 알고리즘
+# 2) 차원 축소(Dimension Reduction)
+
+# 3. 강화학습(Reinforcement Learning)
+# - 어떤 환경에서 정의된 에이전트가 현재 상태를 인식하여 선택 가능한 행동들 중에서
+#   보상을 최대화하는 행동 혹은 행동 순서를 선택하는 방법
+# - 알파고
+
+#------------------------------------------------------------------------------
+# 1. 의사결정나무(Decision tree, tree model)
+# - 의사결정규칙을 나무 구조로 나타내어 전체 자료를 몇개의 소집단으로 분류하거나 
+#   예측(prediction)을 수행하는 분석
+# - 특정 조건을 기준으로 o/x로 나누어 분류/ 회귀를 진행하는 Tree 구조의 분류/ 회귀
+#   데이터마이닝 기법
+# - 종속변수가 범주형이면 Decision Tree Classfication으로 분류를 진행.
+# - 종속변수가 연속형이면 Decision Tree Regression으로 회귀를 진행.
+# - 고객 구매데이터(x)를 이용해 고객 등급(y)를 분류
+# ex) 야구선수의 데이터(x)를 이용해 다음 해의 연봉(y)을 예측.
+
+# - root node: 최상위 노드
+# - 터미널 노드: 자식 노드가 없는 가장 아래 노드
+# - internal 노드: 자식이 존재하는 노드
+# - 의사결정나무 목표는 최대한 균일한/ 순수한 상태의 부분집합을 찾는것
+
+# 순수도(Purity)
+# - 데이터들의 동질성이 높은 정도
+# - 부모 노드 보다 더 순수도가 높은 자식노드를 만들고 이를 반복하여 의상결정을 생성
+
+# 예측 의사결정 나무 모형
+# - 조건에 따라 구역을 나눈 뒤 각 구역에 존재한 값들의 평균을 예측값으로 사용.
+# 구역을 나누는 방법은 RSS를 최소로 만드는 구역으로 나눔
+# RSS: 잔차 제곱합 * 잔차: 예측값과 관측한 실제값의 차이
+# -j개의 구역을 나눌 수 있는 경우의 수는 무수히 많기 때문에 우리는 구역을 2개씩 연속적으로
+# 나누어 가는 Recursive binary splitting 방법 사용.
+
+# 루트노드: 3, 4, 5, 7, 8, 9
+# 평균: (3+4+5+7+8+9)/6 =6
+# RSS: (6-3)^2 + (6-4)^2 + (6-5)^2 + (6-7)^2 + (6-8)^2 + (6-9)^2 = 28
+
+# 좌측노드: 3, 4, 5 = RSS: 2
+# 우측노드: 7, 8, 9 = RSS: 2
+
+# 좌측노드: 3, 9, 7 = RSS: ?
+# 우측노드: 5, 4, 9 = RSS: ?
+
+# ▶ 분류 후에 어떻게 예측할 것인가 선택
+# - 기준에 따라서 구역을 나눈 뒤 구역에 존재하는 값들 중 최빈값(빈도수가 높은 값)을
+# 예측 값으로 사용
+
+# ▶ Gini index, Entropy
+# - 의사결정나무는 하위 노드에서 종속변수를 가장 균일하게 존재하도록 만들어주는 x변수를
+#   찾아서 반복적으로 가지를 뻗어 나가는 방법 -> 각 노드의 균일성을 계산
+# 노드 균일성을 계산 방법: gini index, entropy
+
+# >> Gini index(지니 계수)
+# - 어떤 노드의 구성이 얼마나 순수한지(균일)를 계산한 값.
+# - 고양이, 고양이, 고양이, 고양이, 강아지, 고양이, 고양이
+# - (6/7) x (1/7) + (1/7) x (6/7) = 0.2449
+
+# Gini index가 0이면 모든 데이터가 균일한 (동일한) 데이터.
+
+# >> Entropy
+# - 데이터가 얼마나 무질서한지 나타냄.
+# L노드: 파랑3, 빨강3 => 빨강 50%, 파랑 50%
+# - (0.5 x log0.5 + 0.5xlog0.5)=1
+# R노드: 빨강6, 파랑 0 => 빨강 100%, 파랑 0%
+# (1.0xlog1 + 0xlog0)=0
+# 값들의 개수가 같으면 엔트로피가 가장 높은 1
+# 동일한 값들로 구성되어 있으면 엔트로피가 0
+
+# ▶ IG(Information Gain): 정보이득
+# 엔트로피를 이용해서 특정 x변수에 의해서 분화가 될 경우 얻게되는 정보의 양
+# 가장 높은 IG값을 주는 x변수로 분화시켜서 tree model를 만드는게 목표
+
+# ▶ 과적합(Overfitting)
+# - 머신러닝에서 학습 데이터를 너무 과하게 학습하는 것
+# - 가지치기(Pruning)를 사용하여 과적합 해결.
+
+# ▶ Tree Pruning(가지치기)
+# - 최대한으로 학습된 의사결정 나무는 leaf노드에서 항상 100% 균일성을 가짐 -> 과적합(overfitting) 발생
+
+# ▶ Pre-pruning
+# - 트리 생성을 사전에 중단하는 방법
+# - tree의 최대 깊이를 제한하여 leaf node의 최대 갯수를 제한하는 방법.
+
+# ▶ Post-pruning
+# - 트리를 만든 후 하위 노드를 제거하거나 병합하여 데이터의 개수가 적은 노드를 삭제.
+
+-------------------------------------------------------------------------------------------------------------------------------
+library(readxl)
+library(caret)
+install.packages("caret")
+creditData <- read.csv("res/credit.csv", stringsAsFactors = T)
+View(creditData)
+
+# 대출기간
+summary(creditData$months_loan_duration)
+# 대출금액
+summary(creditData$amount)
+
+#default = no: 미상환, yes:상환
+table(creditData$default)
+
+set.seed(12345)
+# order() : 오름차순으로 정렬, 결측치 제거
+creditRandData <-creditData[order(runif(1000)),]
+head(creditData$amount)
+head(creditRandData$amount)
+
+#학습용: 900명, 테스트용:100명
+creditTrain <- creditData[1:900, ]
+creditTest <- creditRandData[901:1000, ]
+# R에서는 비율을 구하는 방법 중 matrix 테이블을 한번에 proportion(비율) 테이블로 변환
+prop.table(table(creditTrain$default))
+prop.table(table(creditTest$default))
+
+#C50은 정보획득량을 기준으로 결정트리를 시각화
+library(C50)
+install.packages("C50")
+creditModel <- C5.0(creditTrain[-17], creditTrain$default)
+summary(creditModel)
+
+creditPred <- predict(creditModel, creditTest)
+table(creditPred)
+
+install.packages("gmodels")
+library(gmodels)
+CrossTable(creditTest$default,creditPred, dnn=c("Actual","prdict"))
+
+# chi-square 검정: 교차분석으로 얻어진 교차 분할표를 대상으로 유의 확률(p값)을 
+# 적용하여 변수들 간의 독립성 및 관련성 여부등을 검정하는 분석.
+
+# 앙상블 기법
+# 단독 모델로 예측하는 것이 아닌 여러 모델을 생성하여 예측하고 평균을 통해 이 결과를 예측
+# 1. Boosting: 가중치를 이용하여 약한 학습기를 강한 학습기로 만드는 방법
+
+# 2.Bagging: 부트스크랩을 집계하는 것.
+# 부트스크랩: random sampling을 적용하는 방법
+# - 학습 데이터가 충분하지 않더라도 부트스크랩을 집계하여 충분한 학습효과를 주는 효과
+# - 램덤 포레스트 분석
+
+creditBoost10 <- C5.0(creditTrain[-17], creditTrain$default, train= 10)
+summary(creditBoost10)
+creditBoost10Pred <- predict(creditBoost10,creditTest)
+CrossTable(creditTest$default, creditBoost10Pred, dnn=c("Actual", "predict"))

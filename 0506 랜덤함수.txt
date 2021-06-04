@@ -1,0 +1,108 @@
+#연습문제
+#1. 동전 앞면과 뒷면에 대한 확률 함수 구현
+#랜덤 생성 함수: runif()
+#ex) runif(5, min,max)
+
+#랜덤 생성 함수
+rand_coin <- function(num){
+  
+    rand<-as.integer(runif(num,min=0,max=2))
+    return(rand)
+}
+
+c<-rand_coin(20)
+c
+
+#랜덤 확률 분포 함수 
+#몬테카를로 시뮬레이션
+monteTest <- function(num){
+  cnt<-0
+  for(i in 1:num){
+    cnt <-cnt+rand_coin(1)
+  }
+  result<-cnt/num
+  return(result)
+}
+
+print(monteTest(20))
+print(monteTest(1000000))
+# 동전 20회 던졌을 때 앞뒤를 출력 
+coin<-as.integer(runif(20,0,2))
+
+coin
+
+
+> runif(5,min=0,max=1)
+[1] 0.005972115 0.729207013 0.488820649 0.128655418 0.444042375
+
+> #랜덤 생성 함수
+
+> rand_coin <- function(num){
++   
++     rand<-as.integer(runif(num,min=0,max=2))
++     return(rand)
++ }
+> c<-rand_coin(20)
+> c
+ [1] 1 0 0 1 1 0 1 1 0 0 0 1 1 0 1 1 1 0 1 1
+
+> #랜덤 확률 분포 함수 
+> #몬테카를로 시뮬레이션
+
+> monteTest <- function(num){
++   cnt<-0
++   for(i in 1:num){
++     cnt <-cnt+rand_coin(1)
++   }
++   result<-cnt/num
++   return(result)
++ }
+
+> print(monteTest(20))
+[1] 0.75
+> print(monteTest(1000000))
+[1] 0.500478
+
+> # 동전 20회 던졌을 때 앞뒤를 출력 
+
+> coin<-as.integer(runif(20,0,2))
+> coin
+ [1] 1 1 1 1 1 0 0 1 0 1 1 0 0 1 0 0 1 1 0 0
+
+---------------------------------------------------------------------
+> #동전 앞뒤 랜덤 생성 함수
+> coinTest <- function(n){
++   r<-runif(n, min=0, max=1)
++   res<- c()
++   for(i in 1:n){
++     if(r[i]<=0.5){
++       res[i]<- 0
++     }
++     else{
++       res[i]<- 1
++     }
++   }
++   return(res)
++ }
+> res <- coinTest(5)
+> res
+[1] 1 0 1 0 0
+> hist(res) #histogram으로 결과를 보여줌
+
+
+#랜덤 확률 분포 함수 
+#몬테카를로 시뮬레이션
+> monte <- function(n){
++   cnt <- 0
++   for(i in 1:n){
++     cnt <- cnt + coinTest(1)
++   }
++   result<- cnt / n
++   return(result)
++ }
+> monte(10)
+[1] 0.3
+> monte(1000)
+[1] 0.528
+> monte(100000)
+[1] 0.50003

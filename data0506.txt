@@ -1,0 +1,426 @@
+library(readxl)
+ex <- read_excel('res/sample1.xlsx')
+View(ex)
+#열단위 자료형 출력
+str(ex)
+#행과 열의 개수 합산
+dim(ex)
+#열 이름
+ls(ex)
+
+ex <- read_excel('res/sample1.xlsx')
+> View(ex)
+> str(ex)
+tibble[,8] [10 x 8] (S3: tbl_df/tbl/data.frame)
+ $ ID     : num [1:10] 1 2 3 4 5 6 7 8 9 10
+ $ SEX    : chr [1:10] "F" "M" "F" "M" ...
+ $ AGE    : num [1:10] 50 20 40 34 45 32 32 23 23 14
+ $ AREA   : chr [1:10] "서울" "대구" "부산" "울산" ...
+ $ AMT17  : num [1:10] 5.00e+06 6.00e+06 1.00e+09 2.34e+10 3.43e+07 ...
+ $ Y17_CNT: num [1:10] 50 34 24 3 4 5 32 21 13 9
+ $ AMT16  : num [1:10] 100000 300000 2000 3000 32000 23000 1000 10000 330000 12000
+ $ Y16_CNT: num [1:10] 14 22 23 34 5 7 2 3 34 12
+> dim(ex)
+[1] 10  8
+> Is(ex)
+Error in Is(ex) : 함수 "Is"를 찾을 수 없습니다
+> ls(ex)
+[1] "AGE"     "AMT16"   "AMT17"   "AREA"    "ID"      "SEX"     "Y16_CNT" "Y17_CNT"
+
+
+#데이터 조작
+#dplyr 패키지 활요
+# 주요함수
+# filter(): 데이터 셋에서 조건에 맞는 데이터 셋을 추출하는 기능
+# arrange(): 데이터 셋의 특정 칼럼으로 정렬하는 기능
+# select(): 데이터 셋을 대상으로 칼럼을 선택하는 기능
+# mutate(): 데이터 셋에 새로운 칼럼을 추가하는 기능
+# summarise(): 데이터 셋의 특정 칼럼으로 요약 집계 기능
+# group_by(): 데이터 셋으 집단변수을 이용하여 그룹화하는 기능
+# join(): 데이터 프레임과 데이터프레임을 결합하는 기능
+# bind(): 행 또는 열단위로 데이터프레임을 합치는 기능
+# names(): 칼럼 이름을 변경하는 기능
+
+# 파이프 연산자(%>%)를 이용한 함수 적용
+# 데이터프레임을 조작하는데 필요한 함수를 순차적으로 적용할 경우 사용하는 연사자
+install.packages("dplyr")
+library(dplyr)
+
+#열이름 바꾸기 (속성 변경)
+ex<- rename(ex, Y17_AMT=AMT17, Y16_ATM=AMT16)
+View(ex)
+
+#새로운 열(속성) 추가, 특정 속성 값 지정 연산
+ex$AMT_NEW <- ex$Y17_AMT + ex$Y16_ATM
+ex$CNT_NEW <- ex$Y17_CNT + ex$Y16_CNT
+View(ex)
+
+# 평균 이체 값
+ex$AVG_AMT <- ex$AMT_NEW / ex$CNT_NEW
+View(ex)
+
+#AVG_GR 속성 조건문 이용하여 AGE속성 값 비교하여 값 설정
+ex$AVG_GR <- ifelse(ex$AGE >= 50, 'A1', 
+                    ifelse(ex$AGE>=40,'A2',
+                           ifelse(ex$AGE>=30,'A3',
+                                  ifelse(ex$AGE>=20,'A4','A5'))))
+View(ex)
+
+# 특정 열(속성) 값 출력
+> ex %>% select(ID)
+
+# A tibble: 10 x 1
+      ID
+   <dbl>
+ 1     1
+ 2     2
+ 3     3
+ 4     4
+ 5     5
+ 6     6
+ 7     7
+ 8     8
+ 9     9
+10    10
+
+> ex %>% select(ID,AREA, Y17_CNT)
+
+# A tibble: 10 x 3
+      ID AREA  Y17_CNT
+   <dbl> <chr>   <dbl>
+ 1     1 서울       50
+ 2     2 대구       34
+ 3     3 부산       24
+ 4     4 울산        3
+ 5     5 서울        4
+ 6     6 수원        5
+ 7     7 경기       32
+ 8     8 경기       21
+ 9     9 서울       13
+10    10 서울        9
+
+#특정 속성 값 제외 출력
+> ex %>% select(-AREA)
+
+# A tibble: 10 x 11
+      ID SEX     AGE     Y17_AMT Y17_CNT Y16_ATM Y16_CNT     AMT_NEW CNT_NEW    AVG_AMT AVG_GR
+   <dbl> <chr> <dbl>       <dbl>   <dbl>   <dbl>   <dbl>       <dbl>   <dbl>      <dbl> <chr> 
+ 1     1 F        50     5000000      50  100000      14     5100000      64     79688. A1    
+ 2     2 M        20     6000000      34  300000      22     6300000      56    112500  A4    
+ 3     3 F        40  1000000000      24    2000      23  1000002000      47  21276638. A2    
+ 4     4 M        34 23445332443       3    3000      34 23445335443      37 633657715. A3    
+ 5     5 M        45    34334664       4   32000       5    34366664       9   3818518. A2    
+ 6     6 F        32   234622444       5   23000       7   234645444      12  19553787  A3    
+ 7     7 F        32   700000000      32    1000       2   700001000      34  20588265. A3    
+ 8     8 F        23   454333000      21   10000       3   454343000      24  18930958. A4    
+ 9     9 M        23   234566000      13  330000      34   234896000      47   4997787. A4    
+10    10 F        14 10303404303       9   12000      12 10303416303      21 490638872. A5    
+
+> ex %>% select(-ID,-SEX,-AGE)
+
+# A tibble: 10 x 9
+   AREA      Y17_AMT Y17_CNT Y16_ATM Y16_CNT     AMT_NEW CNT_NEW    AVG_AMT AVG_GR
+   <chr>       <dbl>   <dbl>   <dbl>   <dbl>       <dbl>   <dbl>      <dbl> <chr> 
+ 1 서울      5000000      50  100000      14     5100000      64     79688. A1    
+ 2 대구      6000000      34  300000      22     6300000      56    112500  A4    
+ 3 부산   1000000000      24    2000      23  1000002000      47  21276638. A2    
+ 4 울산  23445332443       3    3000      34 23445335443      37 633657715. A3    
+ 5 서울     34334664       4   32000       5    34366664       9   3818518. A2    
+ 6 수원    234622444       5   23000       7   234645444      12  19553787  A3    
+ 7 경기    700000000      32    1000       2   700001000      34  20588265. A3    
+ 8 경기    454333000      21   10000       3   454343000      24  18930958. A4    
+ 9 서울    234566000      13  330000      34   234896000      47   4997787. A4    
+10 서울  10303404303       9   12000      12 10303416303      21 490638872. A5  
+
+# 속성 값 추출하여 출력
+ex %>% filter(AREA =='서울')
+
+# A tibble: 4 x 12
+     ID SEX     AGE AREA      Y17_AMT Y17_CNT Y16_ATM Y16_CNT     AMT_NEW CNT_NEW    AVG_AMT AVG_GR
+  <dbl> <chr> <dbl> <chr>       <dbl>   <dbl>   <dbl>   <dbl>       <dbl>   <dbl>      <dbl> <chr> 
+1     1 F        50 서울      5000000      50  100000      14     5100000      64     79688. A1    
+2     5 M        45 서울     34334664       4   32000       5    34366664       9   3818518. A2    
+3     9 M        23 서울    234566000      13  330000      34   234896000      47   4997787. A4    
+4    10 F        14 서울  10303404303       9   12000      12 10303416303      21 490638872. A5 
+
+> ex %>% filter(AREA =='서울' & Y17_CNT >= 20)
+
+# A tibble: 1 x 12
+     ID SEX     AGE AREA  Y17_AMT Y17_CNT Y16_ATM Y16_CNT AMT_NEW CNT_NEW AVG_AMT AVG_GR
+  <dbl> <chr> <dbl> <chr>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl> <chr> 
+1     1 F        50 서울  5000000      50  100000      14 5100000      64  79688. A1    
+
+# 정렬
+ex %>% arrange(AGE) # 나이 기준 오름차순
+
+# 나이 기준 내림차순
+ex %>% arrange(desc(AGE))
+
+# 속성 값의 모든 합
+> ex %>% summarise(TOT_Y17_AMT=sum(Y17_AMT))
+# A tibble: 1 x 1
+  TOT_Y17_AMT
+        <dbl>
+1 36417592854
+
+#그룹별 
+> ex %>% group_by(AREA) %>% summarise(SUM_AMT17_BY_AREA=sum(Y17_AMT))
+# A tibble: 6 x 2
+  AREA  SUM_AMT17_BY_AREA
+  <chr>             <dbl>
+1 경기         1154333000
+2 대구            6000000
+3 부산         1000000000
+4 서울        10577304967
+5 수원          234622444
+6 울산        23445332443
+
+# 행기준으로 join: bind_rows()함수
+ex_binjoin <- bind_rows(mData,fData)
+
+> View(ex_binjoin)
+> ex_binjoin
+# A tibble: 10 x 8
+      ID SEX     AGE AREA        AMT17 Y17_CNT  AMT16 Y16_CNT
+   <dbl> <chr> <dbl> <chr>       <dbl>   <dbl>  <dbl>   <dbl>
+ 1     2 M        20 대구      6000000      34 300000      22
+ 2     4 M        34 울산  23445332443       3   3000      34
+ 3     5 M        45 서울     34334664       4  32000       5
+ 4     9 M        23 서울    234566000      13 330000      34
+ 5     1 F        50 서울      5000000      50 100000      14
+ 6     3 F        40 부산   1000000000      24   2000      23
+ 7     6 F        32 수원    234622444       5  23000       7
+ 8     7 F        32 경기    700000000      32   1000       2
+ 9     8 F        23 경기    454333000      21  10000       3
+10    10 F        14 서울  10303404303       9  12000      12
+
+#열기준으로 join
+bind_col <- left_join(jeju_y17,jeju_y16, by="ID")
+View(bind_col)
+
+# 내부조인
+bind_col_inner <- inner_join(jeju_y17, jeju_y16, by="ID")
+View(bind_col_inner)
+
+left_join 과 같은 결과
+
+
+bind_col_full <- full_join(jeju_y17,jeju_y16,by="ID")
+View(bind_col_full)
+
+
+
+#수학 함수
+x1<- c(1, 2, 3, 4, 5 ,6, 100)
+> # 평균
+> mean(x1)
+[1] 17.28571
+
+avg<- x1 / 7
+> avg
+[1]  0.1428571  0.2857143  0.4285714  0.5714286  0.7142857  0.8571429 14.2857143
+
+ #NA = NULL : 결측값
+> 
+> data <- c(10, 20, 5, 4, 40, 7, NA, 6, 3, NA, 2, NA)
+> 
+> #결측값을 통계 분석 시 제외(미포함): na.rm = TRUE
+> na <- function(x){
++   print(x)
++   print(mean(x, na.rm=T))
++ }
+> na(data)
+ [1] 10 20  5  4 40  7 NA  6  3 NA  2 NA
+[1] 10.77778
+
+#  na.rm=F
+
+na <- function(x){
++   print(x)
++   print(mean(x, na.rm=F))
++ }
+> na(data)
+ [1] 10 20  5  4 40  7 NA  6  3 NA  2 NA
+[1] NA
+
+#NA를 0으로 설정시 데이터 왜곡 발생
+# 결측값이 포함되어 있는지 확인하는 방법: is.na()
+na <- function(x){
++   print(x)
++   print(mean(x, na.rm=T))
++   
++   data = ifelse(!is.na(x),x,0) # 삼항연산자
++   print(data)
++   print(mean(data))
++ }
+
+> na(data)
+ [1] 10 20  5  4 40  7 NA  6  3 NA  2 NA
+[1] 10.77778
+ [1] 10 20  5  4 40  7  0  6  3  0  2  0
+[1] 8.083333
+
+na <- function(x){
+  print(x)
+  print(mean(x, na.rm=T))
+  
+  data = ifelse(!is.na(x),x,0) # 삼항연산자
+  print(data)
+  print(mean(data))
+  #round() 반올림 함수
+  #na를 평균값으로 변경
+  data2 = ifelse(!is.na(x),x,round(mean(x,na.rm= T), 2))
+  print(data2)
+  print(mean(data2))
+}
+
+> na(data)
+ [1] 10 20  5  4 40  7 NA  6  3 NA  2 NA
+[1] 10.77778
+ [1] 10 20  5  4 40  7  0  6  3  0  2  0
+[1] 8.083333
+ [1] 10.00 20.00  5.00  4.00 40.00  7.00 10.78  6.00  3.00 10.78  2.00 10.78
+[1] 10.77833
+
+#중앙값(중위수)
+> x2 <- c(1,2,3,4,5,100)
+> median(x2)
+[1] 3.5
+> max(x2)
+[1] 100
+> min(x2)
+[1] 1
+> range(x2)
+[1]   1 100
+
+#분위수(변위값)
+#1사분위수(Q1): 25%, 2사분위수(Q2): 50%, 3사분위수(Q3): 75%
+> quantile(x2)
+    0%    25%    50%    75%   100% 
+  1.00   2.25   3.50   4.75 100.00 
+
+> quantile(x2,probs = 0.25)
+ 25% 
+2.25 
+> quantile(x2,probs = 0.5)
+50% 
+3.5 
+> quantile(x2,probs = 0.75)
+ 75% 
+4.75 
+> quantile(x2,probs = 0.8)
+80% 
+  5 
+
+# 표준편차: 평균에 대한 오차
+# 실제 데이터 값이 평균으로 기준으로 할때의 분포값
+x2 <- c(1,2,3,4,5,100)
+> sd(x2)
+[1] 39.62533
+
+# 분산: 편차의 제곱의 합
+> var(x2)
+[1] 1570.167
+
+#정의 함수 만들기
+
+x <- c(7, 5, 12, 9, 15, 6)
+
+#분산 식: var= sum((x-산술평균)^2) / (변량의 개수-1)
+# var <- sum((x-mean(x))^2) / (lenght(x)-1)
+
+var_sd <- function(x){
+  # 데이터가 평균으로부터 분포하는 정동
+  n <- length(x)
+  var <- sum((x-mean(x))^2)/(n-1)
+  sd <- sqrt(var)
+  cat('분산: ',var, '\n')
+  cat('표준편차: ',sd)
+}
+
+var_sd(x)
+> var_sd(x)
+분산:  5.4 n표준편차:  2.32379
+
+x <- c(1,1,1,1)
+> var_sd(x)
+분산:  0 
+표준편차:  0
+# 데이터의 오차가 없다.
+
+install.packages('fBasics')
+library('fBasics')
+
+#정규분포: 동일한 확률을 가진 변수들이 적당히 크면, 해당 변수들의 평균은 일정한 패턴을 가지는 분포
+
+#x 변수 첨도: 데이터 분포가 뾰족한 정도
+#통계량이 0보다 크면 정규분포 대비 뾰족한 형태
+# 0보다 작으면 정규분포 대비 평평한 형태
+kurtosis(x)
+
+
+# x 변수 왜도: 데이터 분포의 비대칭성
+> #통계량의 절대값이 클수록 비대칭이 심함
+> # +값이면 오른쪽으로 꼬리가 길고, -값이면 왼쪽으로 꼬리가 긴 형태
+> skewness(x)
+[1] 0.4215205
+attr(,"method")
+[1] "moment"
+
+#reshape2 패키지활용
+#melt(), dcast()/acast() 함수만을 적용하여 집단변수를 통해 데이터의 구조를 유연하게 변경해주는 기능 제공
+
+install.packages('reshape2')
+library('reshape2')
+
+airquality
+head(airquality)
+str(airquality)
+
+#melt()함수는 식별자id, 측정 변수 variable, 측정치 value 형태로 데이터를 재구성하는 함수
+#melt(데이터,id.vars= 식별자 컬럼들, measure.vars= 측정치 컬럼들)
+# measure.vars가 생략되면 id.vars에 해당하지 않은 모든 컬럼이 측정치 컬럼이 됨.
+
+melt_test2 <- melt(airquality, 
+                   #기준열
+                   id.vars = c('Month','Wind'),
+                   #변환열
+                   measure.vars = 'Ozone')
+> head(melt_test2)
+  Month Wind variable value
+1     5  7.4    Ozone    41
+2     5  8.0    Ozone    36
+3     5 12.6    Ozone    12
+4     5 11.5    Ozone    18
+5     5 14.3    Ozone    NA
+6     5 14.9    Ozone    28
+
+> head(airquality)
+  Ozone Solar.R Wind Temp Month Day
+1    41     190  7.4   67     5   1
+2    36     118  8.0   72     5   2
+3    12     149 12.6   74     5   3
+4    18     313 11.5   62     5   4
+5    NA      NA 14.3   56     5   5
+6    28      NA 14.9   66     5   6
+
+ melt_Test3<- melt(airquality,id.vars=c('Month','Day'),variable.name = 'climate_variable',value.name = 'climate_value')
+> head(melt_Test3)
+  Month Day climate_variable climate_value
+1     5   1            Ozone            41
+2     5   2            Ozone            36
+3     5   3            Ozone            12
+4     5   4            Ozone            18
+5     5   5            Ozone            NA
+6     5   6            Ozone            28
+
+ #칼러명 소문자 변경
+> names(airquality)<-tolower(names(airquality))
+> head(airquality)
+  ozone solar.r wind temp month day
+1    41     190  7.4   67     5   1
+2    36     118  8.0   72     5   2
+3    12     149 12.6   74     5   3
+4    18     313 11.5   62     5   4
+5    NA      NA 14.3   56     5   5
+6    28      NA 14.9   66     5   6

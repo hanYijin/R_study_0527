@@ -1,0 +1,227 @@
+#한글 텍스트 마이닝
+library(KoNLP)
+#텍스트 시각화
+library(wordcloud2)
+
+useNIADic()
+wordData <- readLines("res/애국가(가사).txt")
+wordData
+
+wordData <- sapply(wordData, extractNoun)
+wordData
+
+> wordData
+$`(1절)`
+[1] "1"  "절"
+
+$`동해물과 백두산이 마르고 닳도록`
+[1] "동해"   "물"     "백두산" "닳도"   "록"    
+
+$`하느님이 보우하사 우리나라만세`
+[1] "하느님"   "보우"     "하사"     "우리나라" "세"      
+
+$`(후렴)무궁화 삼천리 화려강산 대한사람 대한으로 길이 보전하세`
+ [1] "후"     "무궁화" "삼"     "천"     "리"     "화려"   "강산"   "대한"   "사람"  
+[10] "대한"   "길"     "보전"   "하"     "세"    
+
+[[5]]
+[1] ""
+
+$`(2절)`
+[1] "2"  "절"
+
+$`남산위에 저 소나무 철갑을 두른듯`
+[1] "남산"   "위"     "저"     "소나무" "철갑"   "듯"    
+
+$`바람서리 불변함은 우리기상 일세`
+[1] "바람서리" "불변"     "함"       "우리기"   "상"       "일"       "세"      
+
+$`(후렴)무궁화 삼천리 화려강산 대한사람 대한으로 길이보전하세`
+ [1] "후"     "무궁화" "삼"     "천"     "리"     "화려"   "강산"   "대한"   "사람"  
+[10] "대한"   "길이"   "보전"   "하"     "세"    
+
+[[10]]
+[1] ""
+
+$`(3절)`
+[1] "3"  "절"
+
+$`가을하늘 공활한데 높고 구름없이 `
+[1] "가을"     "하늘"     "공활한데" "구름없"  
+
+$`밝은달은 우리가슴 일편단심일세`
+[1] "밝은달은" "우리"     "가슴"     "일편단심" "세"      
+
+$`(후렴)무궁화 삼천리 화려강산 대한사람 대한으로 길이보전하세`
+ [1] "후"     "무궁화" "삼"     "천"     "리"     "화려"   "강산"   "대한"   "사람"  
+[10] "대한"   "길이"   "보전"   "하"     "세"    
+
+[[15]]
+[1] ""
+
+$`(4절)`
+[1] "4"  "절"
+
+$`이 기상과 이 맘으로 충성을 다하여`
+[1] "기상" "충성" "여"  
+
+$`괴로우나 즐거우나 나라사랑하세`
+[1] "나라" "사랑" "하"   "세"  
+
+$`(후렴)무궁화 삼천리 화려강산 대한사람 대한으로 길이보전하세`
+ [1] "후"     "무궁화" "삼"     "천"     "리"     "화려"   "강산"   "대한"   "사람"  
+[10] "대한"   "길이"   "보전"   "하"     "세"    
+
+[[20]]
+[1] ""
+
+
+addWords <- c("동해물", "삼천리", "화려강산", "대한사람", "백두산", "닳도록")
+
+# 사용자 사전에 사용자 정의 단어 추가
+buildDictionary(user_dic = data.frame(addWords, rep("ncn", length(addWords))), 
+                replace_usr_dic = T)
+
+wordData3 <- sapply(wordData,extractNoun, USE.NAMES = F) #제목사용 F
+wordData3
+
+> wordData3
+$`(1절)`
+[1] "1"  "절"
+
+$`동해물과 백두산이 마르고 닳도록`
+[1] "동해"   "물"     "백두산" "닳도"   "록"    
+
+$`하느님이 보우하사 우리나라만세`
+[1] "하느님이" "보우"     "하사"     "우리나라" "세"      
+
+$`(후렴)무궁화 삼천리 화려강산 대한사람 대한으로 길이 보전하세`
+ [1] "후"       "무궁화"   "삼"       "천"       "리"       "화려강산" "대한사람"
+ [8] "대한"     "길"       "보전"     "하"       "세"      
+
+[[5]]
+[1] ""
+
+$`(2절)`
+[1] "2"  "절"
+
+$`남산위에 저 소나무 철갑을 두른듯`
+[1] "남산"   "위"     "저"     "소나무" "철갑"   "듯"    
+
+$`바람서리 불변함은 우리기상 일세`
+[1] "바람서리" "불변"     "함"       "우리기"   "상"       "일"       "세"      
+
+$`(후렴)무궁화 삼천리 화려강산 대한사람 대한으로 길이보전하세`
+ [1] "후"       "무궁화"   "삼"       "천"       "리"       "화려강산" "대한사람"
+ [8] "대한"     "길이"     "보전"     "하"       "세"      
+
+[[10]]
+[1] ""
+
+$`(3절)`
+[1] "3"  "절"
+
+$`가을하늘 공활한데 높고 구름없이 `
+[1] "가을"     "하늘"     "공활한데" "구름없"  
+
+$`밝은달은 우리가슴 일편단심일세`
+[1] "밝은달은" "우리"     "가슴"     "일편단심" "세"      
+
+$`(후렴)무궁화 삼천리 화려강산 대한사람 대한으로 길이보전하세`
+ [1] "후"       "무궁화"   "삼"       "천"       "리"       "화려강산" "대한사람"
+ [8] "대한"     "길이"     "보전"     "하"       "세"      
+
+[[15]]
+[1] ""
+
+$`(4절)`
+[1] "4"  "절"
+
+$`이 기상과 이 맘으로 충성을 다하여`
+[1] "기상" "충성" "여"  
+
+$`괴로우나 즐거우나 나라사랑하세`
+[1] "나라" "사랑" "하"   "세"  
+
+$`(후렴)무궁화 삼천리 화려강산 대한사람 대한으로 길이보전하세`
+ [1] "후"       "무궁화"   "삼"       "천"       "리"       "화려강산" "대한사람"
+ [8] "대한"     "길이"     "보전"     "하"       "세"      
+
+[[20]]
+[1] ""
+
+#데이터의 빈도수 확인
+undata <- unlist(wordData3)
+undata
+wordTable <- table(undata)
+View(wordTable)
+# 2자 이상 단어 추출
+undata2 <- Filter(function(x){nchar(x) >=2},undata)
+undata2
+
+wordTable2 <- table(undata2)
+wordTable2
+
+#빈도수 높은 단어 순으로 정렬
+sort(wordTable2, decreasing = T)
+
+undata2
+    대한 대한사람   무궁화     보전 화려강산     길이     가슴     가을 공활한데   구름없     기상 
+       4        4        4        4        4        3        1        1        1        1        1 
+    나라     남산     닳도     동해 바람서리 밝은달은   백두산     보우     불변     사랑   소나무 
+       1        1        1        1        1        1        1        1        1        1        1 
+    우리   우리기 우리나라 일편단심     철갑     충성 하느님이     하늘     하사 
+       1        1        1        1        1        1        1        1        1 
+r
+> wordcloud2(wordTable2)
+
+# 특정 문자 제거 패키지
+library(tm)
+facebook <- file("res/facebook_bigdata.txt", encoding = 'UTF-8')
+facebookData <- readLines(facebook)
+facebook
+facebookData
+userDic <- data.frame(term=c("R 프로그래밍", "페이스북", "소셜 네트워크"), tag="ncn")
+buildDictionary(ext_dic = "sejong", user_dic = userDic)
+
+# 문자형 변환 후 명사를 추출, " "으로 데이터 연결하여 하나의 문자열로 변환
+exNouns <-function(x){ paste(extractNoun(as.character(x)), collapse = " ")}
+
+fbookNouns <- sapply(facebookData, exNouns)
+fbookNouns[1]
+
+#말뭉치(Corpus) 생성성
+mycorpus <- Corpus(VectorSource(fbookNouns))
+
+# removePunctuation:특수문자 제거
+myPrepro <- tm_map(mycorpus,removePunctuation)
+
+# removeNumbers: 숫자 제거
+myPrepro <- tm_map(myPrepro, removeNumbers)
+
+# tolower: 알파벳 소문자로 변경
+myPrepro <- tm_map(myPrepro, tolower)
+
+
+
+#알파벳 제거
+myPrepro <- tm_map(myPrepro, removeWords,stopwords("english"))
+
+myPrepro[1:5]
+# 연관성 단어 추출
+inspect(myPrepro[1:5])
+
+# 단어집에서 2~8음절 단어 선택
+mycorpusPreproTerm <- TermDocumentMatrix(myPrepro, control = list(wordLengths=c(4,16)))
+
+mycorpusPreproTerm
+# martrix -> dataframe
+mytermDF <- as.data.frame(as.matrix(mycorpusPreproTerm))
+wordResult <- sort(rowSums(mytermDF),decreasing = T)
+wordResult
+
+myName <- names(wordResult)
+wordDF<-data.frame(word=myName, freq=wordResult)
+View(wordResult)
+wordcloud2(wordDF, fontFamily = "맑은 고딕", size=1.0, color="random-light",
+           backgroundColor="black", shape="diamond")
